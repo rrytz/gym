@@ -134,7 +134,7 @@ const Analytics = ({ userData, session }) => {
           </div>
           <div style={{ height: '300px', width: '100%' }}>
             <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={userData.workouts.slice(0, 10).reverse().map(w => ({
+              <LineChart data={(userData.workouts || []).slice(0, 10).reverse().map(w => ({
                 date: new Date(w.start_time).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
                 volume: w.volume
               }))}>

@@ -78,9 +78,21 @@ function App() {
   // Load data from LocalStorage (Fallback ONLY if no session)
   useEffect(() => {
     if (!session) {
-      const savedData = localStorage.getItem('titanlog_data');
-      if (savedData) {
-        setUserData(JSON.parse(savedData));
+      try {
+        const savedData = localStorage.getItem('titanlog_data');
+        if (savedData) {
+          const parsed = JSON.parse(savedData);
+          // Safely merge with initial state to prevent missing keys
+          setUserData(prev => ({
+            ...prev,
+            ...parsed,
+            workouts: Array.isArray(parsed.workouts) ? parsed.workouts : prev.workouts,
+            routines: Array.isArray(parsed.routines) ? parsed.routines : prev.routines,
+            goals: Array.isArray(parsed.goals) ? parsed.goals : prev.goals
+          }));
+        }
+      } catch (e) {
+        console.error("Failed to load local data:", e);
       }
     }
   }, [session]);
