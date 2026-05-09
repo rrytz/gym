@@ -44,7 +44,7 @@ const RoutinePlanner = ({ userData, setUserData, setActiveTab, setActiveRoutine,
       name: newRoutine.name,
       exercises: newRoutine.exercises,
       user_id: session.user.id,
-      last_performed: 'Never'
+      last_performed: null
     };
 
     // Save to Supabase
@@ -65,7 +65,7 @@ const RoutinePlanner = ({ userData, setUserData, setActiveTab, setActiveRoutine,
       name: r.name,
       exercises: r.exercises,
       user_id: session.user.id,
-      last_performed: 'Never'
+      last_performed: null
     }));
 
     // Save to Supabase
@@ -202,7 +202,7 @@ const RoutinePlanner = ({ userData, setUserData, setActiveTab, setActiveRoutine,
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
               <div>
                 <h3 style={{ fontSize: '1.3rem', marginBottom: '4px' }}>{routine.name}</h3>
-                <p style={{ color: 'var(--text-muted)', fontSize: '0.8rem' }}>Last performed: {routine.lastPerformed || 'Never'}</p>
+                <p style={{ color: 'var(--text-muted)', fontSize: '0.8rem' }}>Last performed: {routine.last_performed ? new Date(routine.last_performed).toLocaleDateString() : 'Never'}</p>
               </div>
               <button 
                 onClick={() => deleteRoutine(routine.id)}
