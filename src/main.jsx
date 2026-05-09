@@ -9,8 +9,11 @@ createRoot(document.getElementById('root')).render(
   </StrictMode>,
 )
 
+// Service Worker disabled temporarily to prevent caching issues during deployment troubleshooting
+/*
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('/sw.js');
   });
 }
+*/
