@@ -75,17 +75,21 @@ function App() {
     }
   }, [session]);
 
-  // Load data from LocalStorage (Fallback)
+  // Load data from LocalStorage (Fallback ONLY if no session)
   useEffect(() => {
-    const savedData = localStorage.getItem('titanlog_data');
-    if (savedData) {
-      setUserData(JSON.parse(savedData));
+    if (!session) {
+      const savedData = localStorage.getItem('titanlog_data');
+      if (savedData) {
+        setUserData(JSON.parse(savedData));
+      }
     }
-  }, []);
+  }, [session]);
 
-  // Save data to LocalStorage
+  // Save data to LocalStorage for persistence
   useEffect(() => {
-    localStorage.setItem('titanlog_data', JSON.stringify(userData));
+    if (userData.workouts.length > 0 || userData.routines.length > 0) {
+      localStorage.setItem('titanlog_data', JSON.stringify(userData));
+    }
   }, [userData]);
 
   if (!session) {

@@ -70,16 +70,21 @@ const RoutinePlanner = ({ userData, setUserData, setActiveTab, setActiveRoutine,
 
     // Save to Supabase
     const { data, error } = await supabase.from('routines').insert(newRoutines).select();
+    
     if (error) {
       console.error('Cloud Sync Error:', error.message);
+      alert('Error saving template: ' + error.message);
       return;
     }
 
-    setUserData({
-      ...userData,
-      routines: [...data, ...(userData.routines || [])]
-    });
-    setShowTemplates(false);
+    if (data) {
+      setUserData({
+        ...userData,
+        routines: [...data, ...(userData.routines || [])]
+      });
+      alert('Success! Template routines added to your library.');
+      setShowTemplates(false);
+    }
   };
 
   const deleteRoutine = async (id) => {

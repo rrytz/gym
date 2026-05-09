@@ -31,6 +31,11 @@ ALTER TABLE routines ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Users can view their own workouts" ON workouts FOR SELECT USING (auth.uid() = user_id);
 CREATE POLICY "Users can insert their own workouts" ON workouts FOR INSERT WITH CHECK (auth.uid() = user_id);
 
+CREATE POLICY "Users can view their own routines" ON routines FOR SELECT USING (auth.uid() = user_id);
+CREATE POLICY "Users can insert their own routines" ON routines FOR INSERT WITH CHECK (auth.uid() = user_id);
+CREATE POLICY "Users can update their own routines" ON routines FOR UPDATE USING (auth.uid() = user_id);
+CREATE POLICY "Users can delete their own routines" ON routines FOR DELETE USING (auth.uid() = user_id);
+
 -- 5. Create a Profiles table to track users
 CREATE TABLE profiles (
   id UUID REFERENCES auth.users PRIMARY KEY,
