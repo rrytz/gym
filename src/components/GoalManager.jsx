@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Target, Trophy, Plus, TrendingUp, Calendar, Trash2 } from 'lucide-react';
 import { supabase } from '../supabaseClient';
 
-const GoalManager = ({ session, onGoalUpdate }) => {
+const GoalManager = ({ session, userData, onGoalUpdate }) => {
   const [goals, setGoals] = useState([]);
   const [isAdding, setIsAdding] = useState(false);
   const [newGoal, setNewGoal] = useState({
@@ -28,6 +28,35 @@ const GoalManager = ({ session, onGoalUpdate }) => {
     }
   };
 
+  const calculateProgress = (goal) => {
+    if (!userData) return 0;
+
+    switch (goal.type) {
+      case 'weight':
+        // Progress for weight is tricky as it can be losing or gaining.
+        // For now, let's assume if current weight is closer to target than start weight was.
+        const currentWeight = userData.weightLogs?.[userData.weightLogs.length - 1]?.weight || goal.current_value;
+        const startWeight = userData.weightLogs?.[0]?.weight || currentWeight;
+        const totalToLose = Math.abs(startWeight - goal.target_value);
+        const lostSoFar = Math.abs(startWeight - currentWeight);
+        return totalToLose === 0 ? 100 : Math.min(100, (lostSoFar / totalToLose) * 100);
+
+      case 'frequency':
+        // Count workouts in the last 7 days vs target
+        const last7Days = new Date();
+        last7Days.setDate(last7Days.getDate() - 7);
+        const weeklyCount = (userData.workouts || []).filter(w => new Date(w.start_time) > last7Days).length;
+        return Math.min(100, (weeklyCount / goal.target_value) * 100);
+
+      case 'strength':
+        // Current PR vs target
+        return Math.min(100, (goal.current_value / goal.target_value) * 100);
+
+      default:
+        return 0;
+    }
+  };
+
   const handleAddGoal = async (e) => {
     e.preventDefault();
     const { data, error } = await supabase
@@ -37,7 +66,7 @@ const GoalManager = ({ session, onGoalUpdate }) => {
         type: newGoal.type,
         target_value: parseFloat(newGoal.target_value),
         target_date: newGoal.target_date,
-        current_value: 0, // Should be synced from weight_logs or workouts
+        current_value: 0,
       }])
       .select();
 
@@ -127,7 +156,7 @@ const GoalManager = ({ session, onGoalUpdate }) => {
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '20px' }}>
         {goals.map((goal) => {
-          const progress = Math.min(100, Math.random() * 80); // Placeholder for actual calculation
+          const progress = calculateProgress(goal);
           return (
             <div key={goal.id} className="glass-card" style={{ padding: '20px', position: 'relative', overflow: 'hidden' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '15px' }}>

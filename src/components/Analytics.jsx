@@ -148,23 +148,25 @@ const Analytics = ({ userData, session }) => {
           </div>
         </div>
 
-        {/* Muscle Frequency */}
-        <div className="glass-card" style={{ padding: '24px' }}>
-          <h3 style={{ fontSize: '1.2rem', marginBottom: '20px' }}>Muscle Group Distribution</h3>
-          <div style={{ height: '300px', width: '100%' }}>
-            <ResponsiveContainer width="100%" height="100%">
-              <RadarChart cx="50%" cy="50%" outerRadius="80%" data={muscleData}>
-                <PolarGrid stroke="rgba(255,255,255,0.1)" />
-                <PolarAngleAxis dataKey="subject" tick={{ fill: 'var(--text-muted)', fontSize: 10 }} />
-                <Radar
-                  name="Training"
-                  dataKey="A"
-                  stroke="var(--primary)"
-                  fill="var(--primary)"
-                  fillOpacity={0.4}
-                />
-              </RadarChart>
-            </ResponsiveContainer>
+        {/* AI Explanation Notepad */}
+        <div className="glass-card" style={{ padding: '24px', background: 'rgba(255, 215, 0, 0.02)', border: '1px solid rgba(255, 215, 0, 0.1)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '20px' }}>
+            <Target color="var(--accent)" />
+            <h3>How it Works: AI Engine</h3>
+          </div>
+          <div style={{ fontSize: '0.9rem', color: 'var(--text-muted)', display: 'flex', flexDirection: 'column', gap: '15px' }}>
+            <div>
+              <strong style={{ color: '#fff', display: 'block', marginBottom: '4px' }}>Linear Regression Algorithm</strong>
+              <p>The system uses the <code>y = mx + b</code> formula. It analyzes your historical data (X) to find the slope (m) of your progress. This allows us to "predict" your future weight or strength with mathematical precision.</p>
+            </div>
+            <div>
+              <strong style={{ color: '#fff', display: 'block', marginBottom: '4px' }}>R-Squared (Confidence)</strong>
+              <p>The percentage shown is the <code>Coefficient of Determination</code>. It measures how well your actual data fits the mathematical model. Higher percentages mean more consistent training!</p>
+            </div>
+            <div>
+              <strong style={{ color: '#fff', display: 'block', marginBottom: '4px' }}>Workout Recommendations</strong>
+              <p>The AI monitors your muscle group frequency and ensures a balanced rotation, automatically suggesting the optimal next session to maximize recovery.</p>
+            </div>
           </div>
         </div>
       </div>

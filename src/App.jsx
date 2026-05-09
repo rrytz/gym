@@ -131,7 +131,7 @@ function App() {
         return (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '40px' }}>
             <WeightTracker session={session} />
-            <GoalManager session={session} onGoalUpdate={() => {}} />
+            <GoalManager session={session} userData={userData} onGoalUpdate={() => {}} />
           </div>
         );
       default:

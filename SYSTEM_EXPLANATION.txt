@@ -1,0 +1,63 @@
+==========================================================================
+FITTRACK: SYSTEM EXPLANATION & LINEAR REGRESSION GUIDE
+==========================================================================
+
+1. SYSTEM OVERVIEW
+------------------
+FitTrack is a comprehensive fitness management system designed to track physical 
+progress and provide data-driven workout recommendations. 
+
+The system consists of:
+- A React Frontend (Vite) with a premium neon-glassmorphism UI.
+- A Supabase Backend for secure authentication and real-time data storage.
+- A custom-built AI Engine for progress forecasting.
+
+2. HOW THE RECOMMENDATION SYSTEM WORKS
+--------------------------------------
+The system analyzes your workout history to prevent overtraining and ensure 
+balanced muscle development. 
+
+Logic:
+- If your last workout was "Push" (Chest/Shoulders/Triceps), the system 
+  recommends "Pull" (Back/Biceps).
+- If your last workout was "Pull", it recommends "Legs".
+- This ensures a standard PPL (Push/Pull/Legs) rotation, which is scientifically 
+  proven for optimal recovery.
+
+3. HOW LINEAR REGRESSION WORKS IN FITTRACK
+------------------------------------------
+Linear Regression is a statistical method used to model the relationship 
+between two variables. In FitTrack, we use it to predict your FUTURE based 
+on your PAST.
+
+A. The Formula: y = mx + b
+   - y: The value we want to predict (e.g., Future Weight).
+   - x: The time factor (e.g., Days from now).
+   - m: The Slope (The rate of your progress).
+   - b: The Intercept (Your starting point).
+
+B. The Algorithm (Least Squares Method):
+   FitTrack calculates the "Line of Best Fit" through your data points. 
+   - It calculates the slope (m) by looking at how much your weight or 
+     strength changes per day.
+   - It calculates the R-Squared value to tell you how "confident" the AI 
+     is in its prediction. If your data is consistent, R-Squared is close to 1.
+
+C. Practical Application:
+   - Weight Tracker: If you've lost 2kg in 10 days, the AI calculates a 
+     slope of -0.2kg/day. It then uses this to predict that in 30 days, 
+     you will be 6kg lighter.
+   - Strength Trends: It tracks your training volume (Weight x Reps) over 
+     time and predicts the target volume for your next session.
+
+4. ACTIVITY & GOAL MANAGEMENT
+-----------------------------
+Goals are not just static numbers. FitTrack links them to your active logs:
+- Frequency Goals: Automatically tracks how many times you've hit the gym 
+  in the last 7 days.
+- Progress Bars: Update in real-time as you log new workouts or weights.
+
+==========================================================================
+Developed for: FitTrack - Fitness Progress Tracking and Workout Recommendation
+Algorithm: Simple Linear Regression (Least Squares)
+==========================================================================
