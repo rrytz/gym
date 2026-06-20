@@ -1,5 +1,5 @@
-// TitanLog Service Worker - v2
-const CACHE_NAME = 'titanlog-v2';
+// TitanLog Service Worker - v3
+const CACHE_NAME = 'titanlog-v3';
 const STATIC_ASSETS = [
   '/',
   '/index.html',
