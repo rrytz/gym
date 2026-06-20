@@ -1,5 +1,26 @@
-import { LayoutDashboard, Dumbbell, Calendar, Apple, Scale, ShieldCheck, Trophy, LogOut, Grid3x3 } from 'lucide-react';
+import { LayoutDashboard, Dumbbell, Calendar, Apple, Scale, ShieldCheck, Trophy, LogOut, BookOpen, Settings, ChevronRight } from 'lucide-react';
 import { supabase } from '../supabaseClient';
+
+const NavSection = ({ title, children }) => (
+  <div style={{ marginBottom: '24px' }}>
+    {title && (
+      <div style={{
+        fontSize: '0.65rem',
+        textTransform: 'uppercase',
+        letterSpacing: '0.12em',
+        color: 'var(--text-dim)',
+        fontWeight: '600',
+        marginBottom: '8px',
+        paddingLeft: '12px',
+      }}>
+        {title}
+      </div>
+    )}
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+      {children}
+    </div>
+  </div>
+);
 
 const NavItem = ({ icon: Icon, label, active, onClick, isMobile }) => (
   <button
@@ -9,53 +30,67 @@ const NavItem = ({ icon: Icon, label, active, onClick, isMobile }) => (
       display: 'flex',
       flexDirection: isMobile ? 'column' : 'row',
       alignItems: 'center',
-      gap: isMobile ? '4px' : '14px',
-      padding: isMobile ? '10px 8px' : '10px 16px',
-      background: active ? 'rgba(201, 168, 76, 0.08)' : 'transparent',
-      border: 'none',
+      gap: isMobile ? '4px' : '12px',
+      padding: isMobile ? '10px 8px' : '12px 16px',
+      background: active ? 'rgba(212, 175, 55, 0.12)' : 'transparent',
+      border: active ? '1px solid rgba(212, 175, 55, 0.3)' : '1px solid transparent',
       color: active ? 'var(--primary)' : 'var(--text-muted)',
-      borderRadius: '6px',
+      borderRadius: '12px',
       width: isMobile ? 'auto' : '100%',
       cursor: 'pointer',
-      transition: 'all 0.2s ease',
-      fontWeight: active ? '600' : '400',
+      transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+      fontWeight: active ? '600' : '500',
       textAlign: isMobile ? 'center' : 'left',
+      position: 'relative',
+      overflow: 'hidden',
     }}
     onMouseEnter={e => {
       if (!active) {
         e.currentTarget.style.color = 'var(--text)';
         e.currentTarget.style.background = 'rgba(255,255,255,0.04)';
+        e.currentTarget.style.transform = 'translateX(4px)';
       }
     }}
     onMouseLeave={e => {
       if (!active) {
         e.currentTarget.style.color = 'var(--text-muted)';
         e.currentTarget.style.background = 'transparent';
+        e.currentTarget.style.transform = 'translateX(0)';
       }
     }}
   >
-    <Icon size={isMobile ? 20 : 16} strokeWidth={active ? 2 : 1.5} />
-    <span style={{ fontSize: isMobile ? '0.58rem' : '0.85rem', letterSpacing: isMobile ? '0.02em' : '0.01em' }}>
+    <Icon size={isMobile ? 20 : 18} strokeWidth={active ? 2.5 : 2} />
+    <span style={{ fontSize: isMobile ? '0.58rem' : '0.85rem', letterSpacing: '0.01em' }}>
       {label}
     </span>
+    {active && !isMobile && (
+      <ChevronRight size={14} style={{ marginLeft: 'auto', opacity: 0.7 }} />
+    )}
   </button>
 );
 
 const Navbar = ({ activeTab, setActiveTab, session }) => {
   const isAdmin = session?.user?.email === 'ritzlloydsastrillas03@gmail.com';
 
-  const menuItems = [
-    { id: 'dashboard', label: 'Home', icon: LayoutDashboard },
+  const mainItems = [
+    { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
     { id: 'workouts', label: 'Workout', icon: Dumbbell },
-    { id: 'records', label: 'PRs', icon: Trophy },
-    { id: 'nutrition', label: 'Fuel', icon: Apple },
     { id: 'progress', label: 'Progress', icon: Scale },
-    { id: 'routines', label: 'Plans', icon: Calendar },
-    { id: 'features', label: 'Features', icon: Grid3x3 },
+  ];
+
+  const trainingItems = [
+    { id: 'exercises', label: 'Exercise Library', icon: BookOpen },
+    { id: 'routines', label: 'Programs', icon: Calendar },
+    { id: 'records', label: 'Personal Records', icon: Trophy },
+  ];
+
+  const toolsItems = [
+    { id: 'nutrition', label: 'Nutrition', icon: Apple },
+    { id: 'settings', label: 'Settings', icon: Settings },
   ];
 
   if (isAdmin) {
-    menuItems.push({ id: 'admin', label: 'Admin', icon: ShieldCheck });
+    toolsItems.push({ id: 'admin', label: 'Admin', icon: ShieldCheck });
   }
 
   const handleLogout = async () => {
@@ -71,12 +106,12 @@ const Navbar = ({ activeTab, setActiveTab, session }) => {
       <nav
         className="desktop-nav"
         style={{
-          width: '220px',
+          width: '260px',
           background: 'var(--surface)',
           borderRight: '1px solid var(--glass-border)',
           display: 'flex',
           flexDirection: 'column',
-          padding: '28px 16px',
+          padding: '32px 20px',
           height: '100vh',
           position: 'sticky',
           top: 0,
@@ -84,34 +119,34 @@ const Navbar = ({ activeTab, setActiveTab, session }) => {
         }}
       >
         {/* Logo — tropa fit */}
-        <div style={{ marginBottom: '36px', paddingLeft: '4px', display: 'flex', alignItems: 'center', gap: '12px' }}>
+        <div style={{ marginBottom: '40px', paddingLeft: '4px', display: 'flex', alignItems: 'center', gap: '12px' }}>
           {/* Circle Icon with 3 dots */}
-          <svg width="46" height="46" viewBox="0 0 46 46" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ flexShrink: 0 }}>
+          <svg width="48" height="48" viewBox="0 0 46 46" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ flexShrink: 0 }}>
             {/* Outer circle */}
-            <circle cx="23" cy="23" r="21" stroke="#C9A84C" strokeWidth="2.5" fill="none" />
+            <circle cx="23" cy="23" r="21" stroke="#D4AF37" strokeWidth="2.5" fill="none" />
             {/* Three dots arranged horizontally */}
-            <circle cx="13" cy="23" r="3.5" fill="#C9A84C" />
-            <circle cx="23" cy="23" r="3.5" fill="#C9A84C" />
-            <circle cx="33" cy="23" r="3.5" fill="#C9A84C" />
+            <circle cx="13" cy="23" r="3.5" fill="#D4AF37" />
+            <circle cx="23" cy="23" r="3.5" fill="#D4AF37" />
+            <circle cx="33" cy="23" r="3.5" fill="#D4AF37" />
           </svg>
 
           {/* Text block */}
           <div>
             <div style={{ lineHeight: 1, marginBottom: '2px' }}>
               <span style={{
-                fontSize: '1.25rem',
-                fontWeight: '700',
+                fontSize: '1.35rem',
+                fontWeight: '800',
                 color: 'var(--text)',
-                letterSpacing: '-0.01em',
+                letterSpacing: '-0.02em',
                 display: 'block',
               }}>
                 tropa
               </span>
               <span style={{
-                fontSize: '1.25rem',
-                fontWeight: '700',
+                fontSize: '1.35rem',
+                fontWeight: '800',
                 color: 'var(--primary)',
-                letterSpacing: '-0.01em',
+                letterSpacing: '-0.02em',
                 display: 'block',
                 borderBottom: '2px solid var(--primary)',
                 paddingBottom: '2px',
@@ -121,12 +156,12 @@ const Navbar = ({ activeTab, setActiveTab, session }) => {
               </span>
             </div>
             <div style={{
-              fontSize: '0.55rem',
+              fontSize: '0.6rem',
               color: 'var(--text-dim)',
               textTransform: 'uppercase',
               letterSpacing: '0.14em',
               marginTop: '5px',
-              fontWeight: '500',
+              fontWeight: '600',
             }}>
               Sama-Sama Tayo
             </div>
@@ -134,16 +169,42 @@ const Navbar = ({ activeTab, setActiveTab, session }) => {
         </div>
 
         {/* Nav Links */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', flex: 1 }}>
-          {menuItems.map(item => (
-            <NavItem
-              key={item.id}
-              icon={item.icon}
-              label={item.label}
-              active={activeTab === item.id}
-              onClick={() => setActiveTab(item.id)}
-            />
-          ))}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', flex: 1, overflowY: 'auto' }}>
+          <NavSection title="Main">
+            {mainItems.map(item => (
+              <NavItem
+                key={item.id}
+                icon={item.icon}
+                label={item.label}
+                active={activeTab === item.id}
+                onClick={() => setActiveTab(item.id)}
+              />
+            ))}
+          </NavSection>
+
+          <NavSection title="Training">
+            {trainingItems.map(item => (
+              <NavItem
+                key={item.id}
+                icon={item.icon}
+                label={item.label}
+                active={activeTab === item.id}
+                onClick={() => setActiveTab(item.id)}
+              />
+            ))}
+          </NavSection>
+
+          <NavSection title="Tools">
+            {toolsItems.map(item => (
+              <NavItem
+                key={item.id}
+                icon={item.icon}
+                label={item.label}
+                active={activeTab === item.id}
+                onClick={() => setActiveTab(item.id)}
+              />
+            ))}
+          </NavSection>
         </div>
 
         {/* User Profile */}
@@ -151,37 +212,48 @@ const Navbar = ({ activeTab, setActiveTab, session }) => {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
-          padding: '12px',
+          padding: '16px',
           borderTop: '1px solid var(--glass-border)',
-          marginTop: '16px',
-        }}>
+          marginTop: '8px',
+          borderRadius: '12px',
+          background: 'rgba(255,255,255,0.02)',
+          transition: 'all 0.3s ease',
+        }}
+        onMouseEnter={e => {
+          e.currentTarget.style.background = 'rgba(255,255,255,0.04)';
+          e.currentTarget.style.borderColor = 'rgba(212, 175, 55, 0.2)';
+        }}
+        onMouseLeave={e => {
+          e.currentTarget.style.background = 'rgba(255,255,255,0.02)';
+          e.currentTarget.style.borderColor = 'var(--glass-border)';
+        }}
+        >
           <div 
             onClick={() => setActiveTab('settings')}
-            style={{ display: 'flex', gap: '10px', alignItems: 'center', minWidth: 0, cursor: 'pointer' }}
+            style={{ display: 'flex', gap: '12px', alignItems: 'center', minWidth: 0, cursor: 'pointer', flex: 1 }}
             title="Open Settings"
-            onMouseEnter={e => e.currentTarget.style.opacity = '0.8'}
-            onMouseLeave={e => e.currentTarget.style.opacity = '1'}
           >
             <div style={{
-              width: '30px',
-              height: '30px',
+              width: '36px',
+              height: '36px',
               borderRadius: '50%',
-              background: 'var(--primary)',
-              color: '#0D0B09',
+              background: 'linear-gradient(135deg, var(--primary), var(--primary-light))',
+              color: '#0A0A0A',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
               fontWeight: '800',
-              fontSize: '0.75rem',
+              fontSize: '0.85rem',
               flexShrink: 0,
+              boxShadow: '0 4px 12px rgba(212, 175, 55, 0.3)',
             }}>
               {initials}
             </div>
             <div style={{ minWidth: 0 }}>
-              <p style={{ fontSize: '0.78rem', fontWeight: '600', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+              <p style={{ fontSize: '0.85rem', fontWeight: '700', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', color: 'var(--text)' }}>
                 {username}
               </p>
-              <p style={{ fontSize: '0.62rem', color: 'var(--text-muted)' }}>
+              <p style={{ fontSize: '0.7rem', color: 'var(--text-muted)', fontWeight: '500' }}>
                 {isAdmin ? 'Admin' : 'Member'}
               </p>
             </div>
@@ -193,16 +265,22 @@ const Navbar = ({ activeTab, setActiveTab, session }) => {
               color: 'var(--text-muted)',
               border: 'none',
               cursor: 'pointer',
-              padding: '4px',
+              padding: '8px',
               display: 'flex',
               alignItems: 'center',
-              borderRadius: '4px',
-              transition: 'color 0.2s',
+              borderRadius: '8px',
+              transition: 'all 0.2s ease',
             }}
-            onMouseEnter={e => e.currentTarget.style.color = 'var(--primary)'}
-            onMouseLeave={e => e.currentTarget.style.color = 'var(--text-muted)'}
+            onMouseEnter={e => {
+              e.currentTarget.style.color = 'var(--primary)';
+              e.currentTarget.style.background = 'rgba(212, 175, 55, 0.1)';
+            }}
+            onMouseLeave={e => {
+              e.currentTarget.style.color = 'var(--text-muted)';
+              e.currentTarget.style.background = 'transparent';
+            }}
           >
-            <LogOut size={14} />
+            <LogOut size={16} />
           </button>
         </div>
       </nav>
@@ -215,14 +293,16 @@ const Navbar = ({ activeTab, setActiveTab, session }) => {
           bottom: 0,
           left: 0,
           right: 0,
+          display: 'flex',
           justifyContent: 'space-around',
-          padding: '8px 4px',
+          padding: '12px 8px',
           zIndex: 1000,
           background: 'var(--surface)',
           borderTop: '1px solid var(--glass-border)',
+          backdropFilter: 'blur(20px)',
         }}
       >
-        {menuItems.map(item => (
+        {[...mainItems.slice(0, 3), ...trainingItems.slice(0, 1)].map(item => (
           <NavItem
             key={item.id}
             icon={item.icon}

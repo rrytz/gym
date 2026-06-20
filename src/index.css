@@ -1,25 +1,42 @@
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Playfair+Display:ital,wght@0,700;1,700&display=swap');
 
 :root {
-  /* Warm dark gold theme from reference */
-  --primary: #C9A84C;
-  --primary-glow: rgba(201, 168, 76, 0.25);
+  /* Premium Dark Theme */
+  --primary: #D4AF37;
+  --primary-glow: rgba(212, 175, 55, 0.3);
   --primary-light: #E8C96B;
-  --secondary: #A07838;
-  --accent: #D4A853;
-  --background: #141210;
-  --surface: #1C1A17;
-  --surface-light: #252219;
-  --surface-hover: #2E2A22;
-  --text: #F0EDE8;
-  --text-muted: rgba(240, 237, 232, 0.5);
-  --text-dim: rgba(240, 237, 232, 0.35);
-  --glass: rgba(255, 248, 230, 0.03);
-  --glass-border: rgba(201, 168, 76, 0.15);
-  --glass-border-hover: rgba(201, 168, 76, 0.35);
-  --radius: 4px;
-  --radius-md: 8px;
-  --radius-lg: 12px;
+  --secondary: #B8962F;
+  --accent: #D4AF37;
+  --background: #0A0A0A;
+  --surface: #141414;
+  --surface-light: #1A1A1A;
+  --surface-hover: #222222;
+  --text: #FFFFFF;
+  --text-muted: rgba(255, 255, 255, 0.6);
+  --text-dim: rgba(255, 255, 255, 0.4);
+  --glass: rgba(255, 255, 255, 0.02);
+  --glass-border: rgba(255, 255, 255, 0.08);
+  --glass-border-hover: rgba(212, 175, 55, 0.3);
+  
+  /* Spacing System (8px grid) */
+  --space-1: 8px;
+  --space-2: 16px;
+  --space-3: 24px;
+  --space-4: 32px;
+  --space-5: 40px;
+  --space-6: 48px;
+  
+  /* Border Radius */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+  
+  /* Shadows */
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.5);
+  --shadow-glow: 0 0 24px rgba(212, 175, 55, 0.15);
 }
 
 * {
@@ -66,59 +83,68 @@ body::before {
   background: var(--surface);
   border: 1px solid var(--glass-border);
   border-radius: var(--radius-lg);
-  transition: all 0.25s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: var(--shadow-sm);
 }
 
 .glass-card:hover {
   border-color: var(--glass-border-hover);
   background: var(--surface-hover);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
 }
 
 /* ─── Buttons ───────────────────────────────────────────────────── */
 .btn-primary {
   background: var(--primary);
-  color: #0D0B09;
+  color: #0A0A0A;
   border: none;
-  padding: 12px 24px;
+  padding: 14px 28px;
   border-radius: var(--radius-md);
   font-weight: 700;
-  font-size: 0.8rem;
+  font-size: 0.85rem;
   display: flex;
   align-items: center;
   gap: 8px;
   cursor: pointer;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.05em;
   text-transform: uppercase;
-  transition: all 0.2s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   white-space: nowrap;
+  box-shadow: var(--shadow-glow);
 }
 
 .btn-primary:hover {
   background: var(--primary-light);
-  transform: translateY(-1px);
-  box-shadow: 0 6px 20px rgba(201, 168, 76, 0.3);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(212, 175, 55, 0.4);
+}
+
+.btn-primary:active {
+  transform: translateY(0);
 }
 
 .btn-secondary {
   background: transparent;
   color: var(--text-muted);
   border: 1px solid var(--glass-border);
-  padding: 10px 20px;
+  padding: 12px 24px;
   border-radius: var(--radius-md);
-  font-weight: 500;
-  font-size: 0.82rem;
+  font-weight: 600;
+  font-size: 0.85rem;
   display: flex;
   align-items: center;
   gap: 8px;
   cursor: pointer;
-  transition: all 0.2s ease;
-  letter-spacing: 0.04em;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  letter-spacing: 0.02em;
 }
 
 .btn-secondary:hover {
   background: var(--surface-hover);
   border-color: var(--primary);
   color: var(--text);
+  transform: translateY(-1px);
 }
 
 /* ─── Accent Text ───────────────────────────────────────────────── */
@@ -140,11 +166,11 @@ body::before {
 
 .main-content {
   flex: 1;
-  padding: clamp(24px, 3vw, 48px);
+  padding: var(--space-4);
   max-width: 100%;
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: var(--space-4);
   min-width: 0;
   overflow-y: auto;
 }
@@ -263,16 +289,17 @@ body::before {
 
 /* ─── Stat / Info Labels ────────────────────────────────────────── */
 .stat-label {
-  font-size: 0.7rem;
+  font-size: 0.75rem;
   text-transform: uppercase;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.08em;
   color: var(--text-muted);
-  font-weight: 500;
+  font-weight: 600;
 }
 
 .stat-value {
   font-size: 2rem;
-  font-weight: 700;
+  font-weight: 800;
   color: var(--text);
-  line-height: 1.2;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
 }

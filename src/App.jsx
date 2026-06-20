@@ -16,7 +16,6 @@ import DailySpinWheel from './components/DailySpinWheel';
 import InstallPrompt from './components/InstallPrompt';
 import RestTimer from './components/RestTimer';
 import PersonalRecords from './components/PersonalRecords';
-import FeaturesOverview from './components/FeaturesOverview';
 import { motion, AnimatePresence } from 'framer-motion';
 import { supabase } from './supabaseClient';
 import Auth from './components/Auth';
@@ -346,8 +345,6 @@ function App() {
             <GoalManager session={session} userData={userData} onGoalUpdate={() => {}} />
           </div>
         );
-      case 'features':
-        return <FeaturesOverview setActiveTab={setActiveTab} />;
       default:
         return <Dashboard userData={userData} setActiveTab={setActiveTab} />;
     }

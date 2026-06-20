@@ -1,17 +1,98 @@
 import React, { useMemo } from 'react';
-import { TrendingUp, Trophy, Flame, Calendar, ArrowRight, Sparkles, Target, Zap } from 'lucide-react';
+import { TrendingUp, Trophy, Flame, Calendar, ArrowRight, Sparkles, Target, Zap, Clock, Dumbbell, PlayCircle } from 'lucide-react';
+import { motion } from 'framer-motion';
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer
 } from 'recharts';
 import { calculatePRsFromWorkouts, getPRsThisWeek } from '../utils/prUtils';
 
-const StatCard = ({ label, value, sub }) => (
-  <div className="glass-card" style={{ padding: '20px 24px' }}>
-    <div className="stat-label" style={{ marginBottom: '8px' }}>{label}</div>
-    <div className="stat-value">{value}</div>
-    {sub && <div style={{ fontSize: '0.72rem', color: 'var(--text-dim)', marginTop: '4px' }}>{sub}</div>}
-  </div>
+const StatCard = ({ label, value, sub, icon: Icon, trend, trendUp, index }) => (
+  <motion.div
+    initial={{ opacity: 0, y: 20 }}
+    animate={{ opacity: 1, y: 0 }}
+    transition={{ duration: 0.4, delay: index * 0.1 }}
+    className="glass-card"
+    style={{ padding: '24px', position: 'relative', overflow: 'hidden' }}
+  >
+    {Icon && (
+      <div style={{
+        position: 'absolute',
+        top: '20px',
+        right: '20px',
+        width: '40px',
+        height: '40px',
+        borderRadius: '10px',
+        background: 'rgba(212, 175, 55, 0.1)',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+      }}>
+        <Icon size={20} color="#D4AF37" />
+      </div>
+    )}
+    <div className="stat-label" style={{ marginBottom: '8px', fontSize: '0.7rem' }}>{label}</div>
+    <div className="stat-value" style={{ fontSize: '2.2rem', marginBottom: '4px' }}>{value}</div>
+    {sub && <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '4px' }}>{sub}</div>}
+    {trend && (
+      <div style={{
+        fontSize: '0.7rem',
+        color: trendUp ? '#4cd964' : '#ff3b30',
+        marginTop: '8px',
+        display: 'flex',
+        alignItems: 'center',
+        gap: '4px',
+        fontWeight: '600',
+      }}>
+        {trendUp ? '↑' : '↓'} {trend}
+      </div>
+    )}
+  </motion.div>
 );
+
+const ProgressRing = ({ progress, size = 120, strokeWidth = 8 }) => {
+  const radius = (size - strokeWidth) / 2;
+  const circumference = radius * 2 * Math.PI;
+  const offset = circumference - (progress / 100) * circumference;
+
+  return (
+    <div style={{ position: 'relative', width: size, height: size }}>
+      <svg width={size} height={size} style={{ transform: 'rotate(-90deg)' }}>
+        <circle
+          cx={size / 2}
+          cy={size / 2}
+          r={radius}
+          stroke="rgba(255, 255, 255, 0.1)"
+          strokeWidth={strokeWidth}
+          fill="none"
+        />
+        <circle
+          cx={size / 2}
+          cy={size / 2}
+          r={radius}
+          stroke="#D4AF37"
+          strokeWidth={strokeWidth}
+          fill="none"
+          strokeDasharray={circumference}
+          strokeDashoffset={offset}
+          strokeLinecap="round"
+          style={{
+            transition: 'stroke-dashoffset 0.5s ease',
+          }}
+        />
+      </svg>
+      <div style={{
+        position: 'absolute',
+        top: '50%',
+        left: '50%',
+        transform: 'translate(-50%, -50%)',
+        textAlign: 'center',
+      }}>
+        <div style={{ fontSize: '1.5rem', fontWeight: '800', color: '#D4AF37' }}>{progress}%</div>
+        <div style={{ fontSize: '0.65rem', color: 'var(--text-muted)', textTransform: 'uppercase' }}>Done</div>
+      </div>
+    </div>
+  );
+};
 
 const Dashboard = ({ userData, setActiveTab }) => {
   const workouts = userData.workouts || [];
@@ -26,21 +107,45 @@ const Dashboard = ({ userData, setActiveTab }) => {
 
   const getRecommendation = () => {
     if (workouts.length === 0)
-      return { tag: 'AI Pick', title: 'Full body, day one.', desc: 'For a fresh start, a compound full body routine builds your foundation faster than any split. Let\'s begin.' };
+      return { 
+        title: 'Push Day A', 
+        exercises: 7, 
+        duration: 60, 
+        muscles: 'Chest / Shoulders / Triceps',
+        progress: 0 
+      };
     const lastTitle = workouts[0]?.title?.toLowerCase() || '';
     if (lastTitle.includes('push') || lastTitle.includes('chest'))
-      return { tag: 'AI Pick', title: 'Pull day incoming.', desc: 'Your push session was solid. Focus on back & biceps to keep things balanced and avoid imbalances.' };
+      return { 
+        title: 'Pull Day B', 
+        exercises: 8, 
+        duration: 65, 
+        muscles: 'Back / Biceps / Rear Delts',
+        progress: 33 
+      };
     if (lastTitle.includes('pull') || lastTitle.includes('back'))
-      return { tag: 'AI Pick', title: 'Leg day. No excuses.', desc: 'Lower body is calling. Hit squats and deadlifts to boost your overall strength and metabolism.' };
-    return { tag: 'AI Pick', title: 'Push day awaits.', desc: 'Chest, shoulders, triceps — let\'s build that pressing power. You\'ve got this.' };
+      return { 
+        title: 'Leg Day A', 
+        exercises: 6, 
+        duration: 55, 
+        muscles: 'Quads / Hamstrings / Glutes',
+        progress: 66 
+      };
+    return { 
+      title: 'Push Day A', 
+      exercises: 7, 
+      duration: 60, 
+      muscles: 'Chest / Shoulders / Triceps',
+      progress: 0 
+    };
   };
 
-  const rec = getRecommendation();
+  const todayWorkout = getRecommendation();
   const totalVolume = workouts.reduce((acc, w) => acc + (parseFloat(w.volume) || 0), 0);
 
-  const today = new Date();
-  const dayName = today.toLocaleDateString(undefined, { weekday: 'long' });
-  const dateStr = today.toLocaleDateString(undefined, { month: 'long', day: 'numeric' });
+  const hour = new Date().getHours();
+  const greeting = hour < 12 ? 'Good Morning' : hour < 18 ? 'Good Afternoon' : 'Good Evening';
+  const username = userData.settings?.name || 'Tropa';
 
   const chartData = workouts.length > 0
     ? workouts.slice(0, 7).reverse().map(w => ({
@@ -66,159 +171,228 @@ const Dashboard = ({ userData, setActiveTab }) => {
   const customTooltipStyle = {
     background: 'var(--surface-light)',
     border: '1px solid var(--glass-border)',
-    borderRadius: '8px',
+    borderRadius: '12px',
     color: 'var(--text)',
     fontSize: '0.8rem',
+    padding: '12px',
   };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '28px' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
 
-      {/* ─── Header ────────────────────────────────────────────── */}
-      <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '16px' }}>
+      {/* ─── Hero Section ────────────────────────────────────────────── */}
+      <motion.div
+        initial={{ opacity: 0, y: 30 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        style={{
+          display: 'grid',
+          gridTemplateColumns: '1fr auto',
+          gap: '32px',
+          alignItems: 'center',
+        }}
+      >
         <div>
-          <div style={{ fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.12em', color: 'var(--text-muted)', marginBottom: '6px' }}>
-            {dayName.toUpperCase()}, {dateStr.toUpperCase()}
-          </div>
-          <h1 style={{ fontSize: 'clamp(1.8rem, 4vw, 2.8rem)', fontWeight: '700', lineHeight: 1.1, letterSpacing: '-0.02em' }}>
-            Welcome back,
-          </h1>
-          <h1 style={{
-            fontSize: 'clamp(1.8rem, 4vw, 2.8rem)',
-            fontWeight: '700',
-            lineHeight: 1.1,
-            letterSpacing: '-0.02em',
-            fontStyle: 'italic',
-            color: 'var(--primary)',
-          }}>
-            Tropa.
-          </h1>
-        </div>
-        <button className="btn-primary" onClick={() => setActiveTab('workouts')}>
-          Begin Workout <ArrowRight size={16} />
-        </button>
-      </header>
-
-      {/* ─── Stat Cards ────────────────────────────────────────── */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: '16px' }}>
-        <StatCard label="Sessions" value={workouts.length} sub="total logged" />
-        <StatCard label="Volume" value={totalVolume > 0 ? `${(totalVolume / 1000).toFixed(1)}k` : '0kg'} sub="total lifted" />
-        <StatCard label="Goals" value={goals.length} sub="in progress" />
-        <StatCard label="Avg / Week" value={workouts.length > 0 ? (workouts.length / Math.max(1, Math.ceil(workouts.length / 4))).toFixed(1) : '—'} sub="not enough data" />
-      </div>
-
-      {/* ─── Main Content Row ───────────────────────────────────── */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 320px', gap: '20px' }} className="dashboard-main">
-
-        {/* Chart + Streak Section */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-
-          {/* Volume Bar Chart */}
-          <div className="glass-card" style={{ padding: '24px' }}>
-            <h3 style={{ fontSize: '0.9rem', fontWeight: '600', marginBottom: '20px', color: 'var(--text-muted)' }}>
-              Volume this week
-            </h3>
-            <div style={{ height: '180px' }}>
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={chartData} barSize={20}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)" vertical={false} />
-                  <XAxis dataKey="name" stroke="var(--text-dim)" fontSize={11} tickLine={false} axisLine={false} />
-                  <YAxis stroke="var(--text-dim)" fontSize={11} tickLine={false} axisLine={false} tickFormatter={v => v > 0 ? `${(v/1000).toFixed(1)}k` : '0'} />
-                  <Tooltip contentStyle={customTooltipStyle} cursor={{ fill: 'rgba(201,168,76,0.05)' }} />
-                  <Bar dataKey="volume" fill="var(--primary)" radius={[3, 3, 0, 0]} />
-                </BarChart>
-              </ResponsiveContainer>
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.2 }}
+            style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginBottom: '8px', fontWeight: '500' }}
+          >
+            {greeting}, {username} 👋
+          </motion.div>
+          <motion.h1
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3, duration: 0.5 }}
+            style={{ 
+              fontSize: 'clamp(2rem, 5vw, 3rem)', 
+              fontWeight: '800', 
+              lineHeight: 1.1, 
+              letterSpacing: '-0.03em',
+              marginBottom: '24px',
+            }}
+          >
+            Today's Workout
+          </motion.h1>
+          
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.4 }}
+            style={{ marginBottom: '24px' }}
+          >
+            <div style={{ fontSize: '1.5rem', fontWeight: '700', color: 'var(--primary)', marginBottom: '8px' }}>
+              {todayWorkout.title}
             </div>
-          </div>
-
-          {/* Streak + PR Row */}
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
-            <div className="glass-card" style={{ padding: '20px 24px' }}>
-              <div className="stat-label" style={{ marginBottom: '8px' }}>Streak</div>
-              <div className="stat-value">{streakDays} days</div>
-            </div>
-            <div className="glass-card" style={{ padding: '20px 24px' }}>
-              <div className="stat-label" style={{ marginBottom: '8px' }}>PR This Week</div>
-              <div style={{ fontSize: '1rem', fontWeight: '600', color: prsThisWeek.length > 0 ? 'var(--primary)' : 'var(--text-muted)', marginTop: '4px' }}>
-                {prsThisWeek.length > 0
-                  ? `${prsThisWeek.length} new ${prsThisWeek.length === 1 ? 'record' : 'records'}`
-                  : 'none yet'}
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* AI Pick + Goal Focus */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-
-          {/* AI Recommendation */}
-          <div className="glass-card" style={{
-            padding: '24px',
-            border: '1px solid rgba(201, 168, 76, 0.25)',
-            background: 'rgba(201, 168, 76, 0.04)',
-          }}>
-            <div style={{
-              fontSize: '0.65rem',
-              textTransform: 'uppercase',
-              letterSpacing: '0.12em',
-              color: 'var(--primary)',
-              fontWeight: '600',
-              marginBottom: '12px',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '6px',
-            }}>
-              <Sparkles size={12} /> {rec.tag}
-            </div>
-            <h2 style={{ fontSize: '1.3rem', fontWeight: '700', lineHeight: 1.2, marginBottom: '10px', letterSpacing: '-0.01em' }}>
-              {rec.title}
-            </h2>
-            <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', lineHeight: 1.6, marginBottom: '20px' }}>
-              {rec.desc}
-            </p>
-            <button className="btn-primary" style={{ width: '100%', justifyContent: 'center' }} onClick={() => setActiveTab('workouts')}>
-              Start this session
-            </button>
-          </div>
-
-          {/* Goal Focus */}
-          <div className="glass-card" style={{ padding: '20px 24px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-              <span style={{ fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--text-muted)', fontWeight: '500' }}>
-                Goal Focus
+            <div style={{ display: 'flex', gap: '24px', fontSize: '0.9rem', color: 'var(--text-muted)' }}>
+              <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <Dumbbell size={16} /> {todayWorkout.exercises} Exercises
               </span>
-              <Target size={14} color="var(--primary)" />
+              <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <Clock size={16} /> {todayWorkout.duration} Minutes
+              </span>
             </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-              {goals.length > 0 ? goals.slice(0, 2).map((goal, i) => (
-                <div key={i}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px', fontSize: '0.82rem' }}>
-                    <span style={{ fontWeight: '500', textTransform: 'capitalize' }}>{goal.type} Goal</span>
-                    <span style={{ color: 'var(--primary)', fontWeight: '600' }}>{goal.target_value}{goal.type === 'weight' ? 'kg' : ''}</span>
-                  </div>
-                  <div style={{ height: '3px', background: 'rgba(255,255,255,0.06)', borderRadius: '2px', overflow: 'hidden' }}>
-                    <div style={{ height: '100%', width: '45%', background: 'var(--primary)', borderRadius: '2px' }} />
-                  </div>
-                </div>
-              )) : (
-                <div style={{ textAlign: 'center', padding: '20px', color: 'var(--text-dim)' }}>
-                  <p style={{ fontSize: '0.78rem' }}>No active goals.</p>
-                </div>
-              )}
+            <div style={{ fontSize: '0.85rem', color: 'var(--text-dim)', marginTop: '8px' }}>
+              {todayWorkout.muscles}
             </div>
-            <button
-              className="btn-secondary"
-              style={{ width: '100%', marginTop: '16px', justifyContent: 'center', fontSize: '0.78rem' }}
-              onClick={() => setActiveTab('progress')}
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.5 }}
+            style={{ display: 'flex', gap: '12px' }}
+          >
+            <button 
+              className="btn-primary" 
+              onClick={() => setActiveTab('workouts')}
+              style={{ padding: '16px 32px', fontSize: '0.9rem' }}
             >
-              + Add a goal
+              <PlayCircle size={18} /> Start Workout
             </button>
+            <button 
+              className="btn-secondary" 
+              onClick={() => setActiveTab('routines')}
+              style={{ padding: '16px 24px', fontSize: '0.9rem' }}
+            >
+              View Plan
+            </button>
+          </motion.div>
+        </div>
+
+        <motion.div
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.6, duration: 0.5, type: 'spring' }}
+        >
+          <ProgressRing progress={todayWorkout.progress} size={140} strokeWidth={10} />
+        </motion.div>
+      </motion.div>
+
+      {/* ─── Quick Stats ────────────────────────────────────────────── */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px' }}>
+        <StatCard 
+          label="Workout Streak" 
+          value={streakDays} 
+          sub="days" 
+          icon={Flame}
+          trend={streakDays > 0 ? 'Active' : 'Start today'}
+          trendUp={streakDays > 0}
+          index={0}
+        />
+        <StatCard 
+          label="Current Weight" 
+          value={userData.settings?.weight || '—'} 
+          sub="kg" 
+          icon={TrendingUp}
+          trend="+2.3%"
+          trendUp={true}
+          index={1}
+        />
+        <StatCard 
+          label="Personal Records" 
+          value={Object.keys(userData.pr || {}).length} 
+          sub="total" 
+          icon={Trophy}
+          trend={prsThisWeek.length > 0 ? `+${prsThisWeek.length} this week` : 'No new PRs'}
+          trendUp={prsThisWeek.length > 0}
+          index={2}
+        />
+        <StatCard 
+          label="Monthly Progress" 
+          value={workouts.length > 0 ? Math.round((workouts.length / 4) * 100) : 0} 
+          sub="workouts" 
+          icon={Zap}
+          trend="On track"
+          trendUp={true}
+          index={3}
+        />
+      </div>
+
+      {/* ─── Active Program ─────────────────────────────────────────── */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.7, duration: 0.5 }}
+        className="glass-card"
+        style={{ padding: '32px' }}
+      >
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '24px' }}>
+          <div>
+            <div style={{ fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--primary)', fontWeight: '600', marginBottom: '8px' }}>
+              Active Program
+            </div>
+            <h2 style={{ fontSize: '1.5rem', fontWeight: '700', marginBottom: '8px' }}>Push Pull Legs Program</h2>
+            <div style={{ fontSize: '0.9rem', color: 'var(--text-muted)' }}>
+              Week 3 of 8
+            </div>
+          </div>
+          <div style={{ textAlign: 'right' }}>
+            <div style={{ fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--text-muted)', fontWeight: '600', marginBottom: '8px' }}>
+              Completion
+            </div>
+            <div style={{ fontSize: '2rem', fontWeight: '800', color: 'var(--primary)' }}>37%</div>
           </div>
         </div>
-      </div>
+        
+        <div style={{ height: '4px', background: 'rgba(255,255,255,0.1)', borderRadius: '2px', marginBottom: '24px', overflow: 'hidden' }}>
+          <motion.div
+            initial={{ width: 0 }}
+            animate={{ width: '37%' }}
+            transition={{ delay: 0.9, duration: 1, ease: 'easeOut' }}
+            style={{ height: '100%', background: 'linear-gradient(90deg, var(--primary), var(--primary-light))', borderRadius: '2px' }}
+          />
+        </div>
+
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div>
+            <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginBottom: '4px', fontWeight: '600' }}>Next Workout</div>
+            <div style={{ fontSize: '1.1rem', fontWeight: '700' }}>Pull Day B</div>
+          </div>
+          <button 
+            className="btn-primary" 
+            onClick={() => setActiveTab('workouts')}
+            style={{ padding: '12px 24px', fontSize: '0.85rem' }}
+          >
+            Continue Program
+          </button>
+        </div>
+      </motion.div>
+
+      {/* ─── Progress Analytics ─────────────────────────────────────── */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.8, duration: 0.5 }}
+        className="glass-card"
+        style={{ padding: '32px' }}
+      >
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
+          <h2 style={{ fontSize: '1.3rem', fontWeight: '700' }}>Weekly Volume</h2>
+          <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>Last 7 days</div>
+        </div>
+        <div style={{ height: '200px' }}>
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart data={chartData} barSize={32}>
+              <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)" vertical={false} />
+              <XAxis dataKey="name" stroke="var(--text-dim)" fontSize={12} tickLine={false} axisLine={false} />
+              <YAxis stroke="var(--text-dim)" fontSize={12} tickLine={false} axisLine={false} tickFormatter={v => v > 0 ? `${(v/1000).toFixed(1)}k` : '0'} />
+              <Tooltip contentStyle={customTooltipStyle} cursor={{ fill: 'rgba(212, 175, 55, 0.08)' }} />
+              <Bar dataKey="volume" fill="url(#goldGradient)" radius={[6, 6, 0, 0]} />
+              <defs>
+                <linearGradient id="goldGradient" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="#D4AF37" />
+                  <stop offset="100%" stopColor="#B8962F" />
+                </linearGradient>
+              </defs>
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+      </motion.div>
 
       <style>{`
-        @media (max-width: 900px) {
+        @media (max-width: 768px) {
           .dashboard-main {
             grid-template-columns: 1fr !important;
           }
