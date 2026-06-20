@@ -72,14 +72,14 @@ const InstallPrompt = () => {
           left: '12px',
           right: '12px',
           zIndex: 8000,
-          background: 'linear-gradient(135deg, #121217ee, #0D0D15ee)',
-          border: '1px solid rgba(0, 242, 255, 0.3)',
+          background: 'linear-gradient(135deg, rgba(10, 17, 24, 0.95), rgba(5, 10, 16, 0.95))',
+          border: '1px solid var(--primary)',
           borderRadius: '20px',
           padding: '16px 18px',
           display: 'flex',
           alignItems: 'center',
           gap: '14px',
-          boxShadow: '0 8px 40px rgba(0, 242, 255, 0.15), 0 20px 50px rgba(0,0,0,0.5)',
+          boxShadow: '0 8px 40px var(--primary-glow), 0 20px 50px rgba(0,0,0,0.6)',
           backdropFilter: 'blur(20px)',
           WebkitBackdropFilter: 'blur(20px)',
           maxWidth: '500px',
@@ -91,14 +91,14 @@ const InstallPrompt = () => {
           width: '46px',
           height: '46px',
           borderRadius: '12px',
-          background: 'linear-gradient(135deg, rgba(0,242,255,0.15), rgba(0,119,255,0.15))',
-          border: '1px solid rgba(0, 242, 255, 0.25)',
+          background: 'linear-gradient(135deg, rgba(0,242,254,0.15), rgba(79,172,254,0.15))',
+          border: '1px solid rgba(0, 242, 254, 0.25)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
           flexShrink: 0,
         }}>
-          <Smartphone size={22} color="#00F2FF" />
+          <Smartphone size={22} color="var(--primary)" />
         </div>
 
         {/* Text — full width for iOS, split for Android */}
@@ -116,8 +116,8 @@ const InstallPrompt = () => {
             }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <span style={{
-                  background: 'rgba(0,242,255,0.15)',
-                  color: '#00F2FF',
+                  background: 'rgba(0,242,254,0.2)',
+                  color: 'var(--primary)',
                   borderRadius: '50%',
                   width: '20px', height: '20px',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -127,8 +127,8 @@ const InstallPrompt = () => {
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <span style={{
-                  background: 'rgba(0,242,255,0.15)',
-                  color: '#00F2FF',
+                  background: 'rgba(0,242,254,0.2)',
+                  color: 'var(--primary)',
                   borderRadius: '50%',
                   width: '20px', height: '20px',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -138,8 +138,8 @@ const InstallPrompt = () => {
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <span style={{
-                  background: 'rgba(0,242,255,0.15)',
-                  color: '#00F2FF',
+                  background: 'rgba(0,242,254,0.2)',
+                  color: 'var(--primary)',
                   borderRadius: '50%',
                   width: '20px', height: '20px',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -167,7 +167,7 @@ const InstallPrompt = () => {
               whileTap={{ scale: 0.95 }}
               onClick={handleInstall}
               style={{
-                background: 'linear-gradient(135deg, #00F2FF, #0077FF)',
+                background: 'linear-gradient(135deg, var(--primary), var(--secondary))',
                 color: '#000',
                 border: 'none',
                 padding: '9px 16px',
@@ -179,7 +179,7 @@ const InstallPrompt = () => {
                 alignItems: 'center',
                 gap: '6px',
                 whiteSpace: 'nowrap',
-                boxShadow: '0 4px 15px rgba(0,242,255,0.3)',
+                boxShadow: '0 4px 15px var(--primary-glow)',
               }}
             >
               <Download size={14} />

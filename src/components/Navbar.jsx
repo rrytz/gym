@@ -10,18 +10,19 @@ const NavItem = ({ icon: Icon, label, active, onClick, isMobile }) => (
       flexDirection: isMobile ? 'column' : 'row', 
       alignItems: 'center', 
       gap: '12px',
-      padding: isMobile ? '10px' : '12px 20px',
-      background: active ? 'var(--primary-glow)' : 'transparent',
+      padding: isMobile ? '10px' : '12px 16px',
+      background: active ? 'var(--primary)' : 'transparent',
       border: 'none',
-      color: active ? 'var(--primary)' : 'var(--text-muted)',
+      color: active ? '#000000' : 'var(--text-muted)',
       borderRadius: '12px',
       width: isMobile ? 'auto' : '100%',
       cursor: 'pointer',
-      transition: 'all 0.3s ease'
+      transition: 'all 0.3s ease',
+      fontWeight: active ? '600' : '500'
     }}
   >
-    <Icon size={22} strokeWidth={active ? 2.5 : 2} />
-    <span style={{ fontSize: isMobile ? '0.65rem' : '0.9rem', fontWeight: active ? '700' : '500' }}>{label}</span>
+    <Icon size={20} strokeWidth={active ? 2.5 : 2} />
+    <span style={{ fontSize: isMobile ? '0.65rem' : '0.9rem' }}>{label}</span>
   </button>
 );
 
@@ -47,10 +48,37 @@ const Navbar = ({ activeTab, setActiveTab, session }) => {
   return (
     <>
       {/* Desktop Sidebar */}
-      <nav className="desktop-nav glass-card" style={{ width: '260px', padding: '30px 20px', flexDirection: 'column', height: '100vh', position: 'sticky', top: 0 }}>
-        <div className="nav-header" style={{ marginBottom: '40px', textAlign: 'center' }}>
-          <h1 style={{ fontSize: '2rem', letterSpacing: '2px', fontWeight: '900' }}>HYVE<span style={{ color: 'var(--primary)' }}>.</span></h1>
-          <p style={{ fontSize: '0.7rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '1px' }}>Your Fitness Buddy</p>
+      <nav className="desktop-nav" style={{ 
+        width: '280px', 
+        background: 'var(--surface)', 
+        borderRight: '1px solid var(--glass-border)', 
+        display: 'flex', 
+        flexDirection: 'column', 
+        padding: '2rem 1.5rem', 
+        height: '100vh', 
+        position: 'sticky', 
+        top: 0,
+        zIndex: 100
+      }}>
+        <div className="logo" style={{ 
+          fontSize: '1.8rem', 
+          fontWeight: 800, 
+          background: 'linear-gradient(to right, var(--primary), var(--secondary))', 
+          WebkitBackgroundClip: 'text', 
+          WebkitTextFillColor: 'transparent', 
+          marginBottom: '3rem', 
+          display: 'flex', 
+          alignItems: 'center', 
+          gap: '12px' 
+        }}>
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#00f2fe" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
+            <path d="M18 8h1a4 4 0 0 1 0 8h-1"/>
+            <path d="M6 8H5a4 4 0 0 0 0 8h1"/>
+            <line x1="2" y1="12" x2="6" y2="12"/>
+            <line x1="18" y1="12" x2="22" y2="12"/>
+            <rect x="6" y="4" width="12" height="16" rx="2"/>
+          </svg>
+          TitanLog
         </div>
 
         <div className="nav-items" style={{ display: 'flex', flexDirection: 'column', gap: '8px', flex: 1 }}>
@@ -82,7 +110,18 @@ const Navbar = ({ activeTab, setActiveTab, session }) => {
       </nav>
 
       {/* Mobile Bottom Nav */}
-      <nav className="mobile-nav glass-card" style={{ position: 'fixed', bottom: 0, left: 0, right: 0, justifyContent: 'space-around', padding: '10px', zIndex: 1000, borderRadius: '20px 20px 0 0' }}>
+      <nav className="mobile-nav" style={{ 
+        position: 'fixed', 
+        bottom: 0, 
+        left: 0, 
+        right: 0, 
+        justifyContent: 'space-around', 
+        padding: '10px', 
+        zIndex: 1000, 
+        background: 'var(--surface)',
+        borderTop: '1px solid var(--glass-border)',
+        borderRadius: '20px 20px 0 0' 
+      }}>
         {menuItems.map(item => (
           <NavItem 
             key={item.id}
