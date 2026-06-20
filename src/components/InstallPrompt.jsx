@@ -101,26 +101,67 @@ const InstallPrompt = () => {
           <Smartphone size={22} color="#00F2FF" />
         </div>
 
-        {/* Text */}
-        <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{ fontWeight: '800', fontSize: '0.95rem', marginBottom: '3px' }}>
-            Install TitanLog
-          </div>
-          {isIOS ? (
-            <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', lineHeight: '1.5' }}>
-              Tap <Share size={11} style={{ display: 'inline', verticalAlign: 'middle' }} />{' '}
-              <strong style={{ color: '#fff' }}>Share</strong> →{' '}
-              <strong style={{ color: '#fff' }}>Add to Home Screen</strong>
+        {/* Text — full width for iOS, split for Android */}
+        {isIOS ? (
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{ fontWeight: '800', fontSize: '0.9rem', marginBottom: '8px' }}>
+              📲 Add to Home Screen
             </div>
-          ) : (
+            <div style={{
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '6px',
+              fontSize: '0.78rem',
+              color: 'var(--text-muted)',
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <span style={{
+                  background: 'rgba(0,242,255,0.15)',
+                  color: '#00F2FF',
+                  borderRadius: '50%',
+                  width: '20px', height: '20px',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  fontWeight: '800', fontSize: '0.7rem', flexShrink: 0,
+                }}>1</span>
+                <span>Tap the <strong style={{ color: '#fff' }}>⬆️ Share</strong> button at the bottom of Safari</span>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <span style={{
+                  background: 'rgba(0,242,255,0.15)',
+                  color: '#00F2FF',
+                  borderRadius: '50%',
+                  width: '20px', height: '20px',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  fontWeight: '800', fontSize: '0.7rem', flexShrink: 0,
+                }}>2</span>
+                <span>Scroll down → tap <strong style={{ color: '#fff' }}>"Add to Home Screen"</strong></span>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <span style={{
+                  background: 'rgba(0,242,255,0.15)',
+                  color: '#00F2FF',
+                  borderRadius: '50%',
+                  width: '20px', height: '20px',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  fontWeight: '800', fontSize: '0.7rem', flexShrink: 0,
+                }}>3</span>
+                <span>Tap <strong style={{ color: '#fff' }}>"Add"</strong> — done! ✅</span>
+              </div>
+            </div>
+          </div>
+        ) : (
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{ fontWeight: '800', fontSize: '0.95rem', marginBottom: '3px' }}>
+              Install TitanLog
+            </div>
             <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
               Add to your home screen — works offline too!
             </div>
-          )}
-        </div>
+          </div>
+        )}
 
         {/* Buttons */}
-        <div style={{ display: 'flex', gap: '8px', flexShrink: 0 }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', flexShrink: 0, alignSelf: 'flex-start' }}>
           {!isIOS && canInstall && (
             <motion.button
               whileTap={{ scale: 0.95 }}
@@ -158,7 +199,7 @@ const InstallPrompt = () => {
               alignItems: 'center',
               justifyContent: 'center',
               cursor: 'pointer',
-              flexShrink: 0,
+              alignSelf: 'flex-end',
             }}
           >
             <X size={15} />
