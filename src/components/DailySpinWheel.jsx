@@ -76,9 +76,9 @@ const DailySpinWheel = ({ onClose, onStartWorkout }) => {
     // Outer ring
     ctx.beginPath();
     ctx.arc(CENTER, CENTER, RADIUS, 0, 2 * Math.PI);
-    ctx.strokeStyle = '#00F2FF';
+    ctx.strokeStyle = 'var(--primary)';
     ctx.lineWidth = 4;
-    ctx.shadowColor = '#00F2FF';
+    ctx.shadowColor = 'var(--primary)';
     ctx.shadowBlur = 12;
     ctx.stroke();
     ctx.shadowBlur = 0;
@@ -91,12 +91,12 @@ const DailySpinWheel = ({ onClose, onStartWorkout }) => {
     ctx.arc(CENTER, CENTER, 38, 0, 2 * Math.PI);
     ctx.fillStyle = hubGrad;
     ctx.fill();
-    ctx.strokeStyle = '#00F2FF';
+    ctx.strokeStyle = 'var(--primary)';
     ctx.lineWidth = 3;
     ctx.stroke();
 
     // Hub label
-    ctx.fillStyle = '#00F2FF';
+    ctx.fillStyle = 'var(--primary)';
     ctx.font = `bold 9px 'Outfit', sans-serif`;
     ctx.textAlign = 'center';
     ctx.fillText('DAILY', CENTER, CENTER - 4);
@@ -153,13 +153,13 @@ const DailySpinWheel = ({ onClose, onStartWorkout }) => {
         transition={{ type: 'spring', stiffness: 200, damping: 22 }}
         style={{
           background: 'linear-gradient(145deg, #121217, #0D0D15)',
-          border: '1px solid rgba(0, 242, 255, 0.2)',
+          border: '1px solid rgba(0, 242, 254, 0.2)',
           borderRadius: '28px',
           padding: '32px 28px',
           width: '100%',
           maxWidth: '460px',
           position: 'relative',
-          boxShadow: '0 0 80px rgba(0, 242, 255, 0.1), 0 30px 60px rgba(0,0,0,0.5)',
+          boxShadow: '0 0 80px rgba(0, 242, 254, 0.1), 0 30px 60px rgba(0,0,0,0.5)',
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
@@ -214,9 +214,9 @@ const DailySpinWheel = ({ onClose, onStartWorkout }) => {
             position: 'absolute',
             top: '-2px',
             zIndex: 10,
-            filter: 'drop-shadow(0 0 6px rgba(0, 242, 255, 0.8))',
+            filter: 'drop-shadow(0 0 6px rgba(0, 242, 254, 0.8))',
           }}>
-            <ChevronDown size={32} color="#00F2FF" strokeWidth={3} />
+            <ChevronDown size={32} color="var(--primary)" strokeWidth={3} />
           </div>
 
           {/* Spinning canvas wrapper */}
@@ -225,8 +225,8 @@ const DailySpinWheel = ({ onClose, onStartWorkout }) => {
               borderRadius: '50%',
               overflow: 'hidden',
               boxShadow: isSpinning
-                ? '0 0 50px rgba(0, 242, 255, 0.4), 0 0 100px rgba(0, 242, 255, 0.15)'
-                : '0 0 30px rgba(0, 242, 255, 0.15)',
+                ? '0 0 50px rgba(0, 242, 254, 0.4), 0 0 100px rgba(0, 242, 254, 0.15)'
+                : '0 0 30px rgba(0, 242, 254, 0.15)',
               transition: 'box-shadow 0.5s ease',
             }}
           >
@@ -256,8 +256,8 @@ const DailySpinWheel = ({ onClose, onStartWorkout }) => {
             disabled={isSpinning}
             style={{
               background: isSpinning
-                ? 'rgba(0, 242, 255, 0.3)'
-                : 'linear-gradient(135deg, #00F2FF, #0077FF)',
+                ? 'rgba(0, 242, 254, 0.3)'
+                : 'linear-gradient(135deg, var(--primary), #0077FF)',
               color: isSpinning ? 'rgba(0,0,0,0.5)' : '#000',
               border: 'none',
               padding: '16px 48px',
@@ -267,7 +267,7 @@ const DailySpinWheel = ({ onClose, onStartWorkout }) => {
               cursor: isSpinning ? 'not-allowed' : 'pointer',
               letterSpacing: '2px',
               textTransform: 'uppercase',
-              boxShadow: isSpinning ? 'none' : '0 8px 30px rgba(0, 242, 255, 0.4)',
+              boxShadow: isSpinning ? 'none' : '0 8px 30px rgba(0, 242, 254, 0.4)',
               transition: 'all 0.3s ease',
               display: 'flex',
               alignItems: 'center',

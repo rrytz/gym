@@ -20,7 +20,7 @@ const splitsData = [
     title: 'PPL (Push Pull Legs)',
     tag: 'Highly Recommended',
     icon: Zap,
-    color: '#00F2FF',
+    color: 'var(--primary)',
     description: 'Group muscles by function: pushing, pulling, or leg work.',
     frequency: '3 or 6 Days / Week',
     pros: ['High frequency (2x/week)', 'Logical grouping', 'Excellent for hypertrophy'],

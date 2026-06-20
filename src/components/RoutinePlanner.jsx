@@ -252,13 +252,13 @@ const RoutinePlanner = ({ userData, setUserData, setActiveTab, setActiveRoutine,
                width: '110px', 
                height: '110px', 
                borderRadius: '30px', 
-               background: 'rgba(0, 242, 255, 0.05)', 
+               background: 'rgba(0, 242, 254, 0.05)', 
                display: 'flex', 
                alignItems: 'center', 
                justifyContent: 'center',
                color: 'var(--primary)',
-               boxShadow: '0 0 40px rgba(0, 242, 255, 0.1)',
-               border: '1px solid rgba(0, 242, 255, 0.2)'
+               boxShadow: '0 0 40px rgba(0, 242, 254, 0.1)',
+               border: '1px solid rgba(0, 242, 254, 0.2)'
              }}>
                <Sparkles size={50} />
              </div>

@@ -61,7 +61,7 @@ const Analytics = ({ userData, session }) => {
 
       {/* Regression Insights Row */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '20px' }}>
-        <div className="glass-card" style={{ padding: '24px', border: '1px solid rgba(0, 242, 255, 0.2)' }}>
+        <div className="glass-card" style={{ padding: '24px', border: '1px solid rgba(0, 242, 254, 0.2)' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
             <Sparkles className="neon-text" size={20} />
             <h3 style={{ fontSize: '1.1rem' }}>AI Performance Forecast</h3>
@@ -117,7 +117,7 @@ const Analytics = ({ userData, session }) => {
               Calculate Max
             </button>
             {oneRM && (
-              <div className="animate-fade-in" style={{ textAlign: 'center', padding: '10px', background: 'rgba(0, 242, 255, 0.05)', borderRadius: '12px' }}>
+              <div className="animate-fade-in" style={{ textAlign: 'center', padding: '10px', background: 'rgba(0, 242, 254, 0.05)', borderRadius: '12px' }}>
                 <h4 style={{ fontSize: '1.5rem', color: 'var(--primary)' }}>{oneRM} kg</h4>
               </div>
             )}

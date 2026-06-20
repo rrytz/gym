@@ -45,7 +45,7 @@ const Nutrition = ({ userData, setUserData }) => {
           </div>
         </div>
         <div className="glass-card" style={{ padding: '20px', display: 'flex', gap: '15px', alignItems: 'center' }}>
-          <div style={{ padding: '12px', borderRadius: '12px', background: 'rgba(0, 242, 255, 0.1)', color: '#00F2FF' }}>
+          <div style={{ padding: '12px', borderRadius: '12px', background: 'rgba(0, 242, 254, 0.1)', color: 'var(--primary)' }}>
             <Flame size={24} />
           </div>
           <div>

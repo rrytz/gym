@@ -65,7 +65,7 @@ const Auth = () => {
           width: '100%',
           maxWidth: '420px',
           textAlign: 'center',
-          border: '1px solid rgba(0, 242, 255, 0.1)',
+          border: '1px solid rgba(0, 242, 254, 0.1)',
         }}
       >
         <header style={{ marginBottom: '40px' }}>

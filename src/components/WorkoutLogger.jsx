@@ -217,17 +217,17 @@ const WorkoutLogger = ({ userData, setUserData, setActiveTab, activeRoutine, set
             flexDirection: 'column',
             alignItems: 'center',
             gap: '30px',
-            border: '1px solid rgba(0, 242, 255, 0.1)'
+            border: '1px solid rgba(0, 242, 254, 0.1)'
           }}>
             <div className="floating" style={{ 
               width: '120px', 
               height: '120px', 
               borderRadius: '50%', 
-              background: 'rgba(0, 242, 255, 0.05)',
+              background: 'rgba(0, 242, 254, 0.05)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              boxShadow: '0 0 40px rgba(0, 242, 255, 0.1)'
+              boxShadow: '0 0 40px rgba(0, 242, 254, 0.1)'
             }}>
               <Dumbbell size={50} color="var(--primary)" />
             </div>
@@ -517,7 +517,7 @@ const WorkoutLogger = ({ userData, setUserData, setActiveTab, activeRoutine, set
               alignItems: 'center', 
               gap: '20px', 
               background: 'rgba(0,0,0,0.9)',
-              boxShadow: '0 0 30px rgba(0, 242, 255, 0.2)'
+              boxShadow: '0 0 30px rgba(0, 242, 254, 0.2)'
             }}>
               <div style={{ display: 'flex', flexDirection: 'column' }}>
                 <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '1px' }}>Resting</span>
@@ -573,7 +573,7 @@ const WorkoutLogger = ({ userData, setUserData, setActiveTab, activeRoutine, set
                 padding: '40px', 
                 textAlign: 'center',
                 background: 'rgba(10, 10, 11, 0.8)',
-                boxShadow: '0 0 50px rgba(0, 242, 255, 0.15)'
+                boxShadow: '0 0 50px rgba(0, 242, 254, 0.15)'
               }}
             >
               <div style={{ 

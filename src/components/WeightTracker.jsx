@@ -106,9 +106,9 @@ const WeightTracker = ({ session }) => {
         <div className="glass-card" style={{ padding: '24px', flex: 1, minWidth: '200px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '16px' }}>
             <span style={{ color: 'var(--text-muted)' }}>Total Progress</span>
-            <TrendingDown size={20} color="#00F2FF" />
+            <TrendingDown size={20} color="var(--primary)" />
           </div>
-          <div style={{ fontSize: '2.5rem', fontWeight: '800', color: '#00F2FF' }}>{lost > 0 ? `-${lost}` : lost} <span style={{ fontSize: '1rem', color: 'var(--text-muted)' }}>kg</span></div>
+          <div style={{ fontSize: '2.5rem', fontWeight: '800', color: 'var(--primary)' }}>{lost > 0 ? `-${lost}` : lost} <span style={{ fontSize: '1rem', color: 'var(--text-muted)' }}>kg</span></div>
         </div>
         {prediction && (
           <div className="glass-card" style={{ padding: '24px', flex: 1, minWidth: '200px', border: '1px solid rgba(168, 85, 247, 0.3)' }}>

@@ -64,7 +64,7 @@ const Admin = () => {
       </header>
 
       <div style={{ display: 'flex', gap: '20px', flexWrap: 'wrap' }}>
-        <StatBox icon={Users} label="Total Registered Titans" value={stats.totalUsers} color="#00F2FF" />
+        <StatBox icon={Users} label="Total Registered Titans" value={stats.totalUsers} color="var(--primary)" />
         <StatBox icon={Activity} label="Workouts Logged (Global)" value={stats.totalWorkouts} color="#BD00FF" />
         <StatBox icon={Database} label="Custom Routines Created" value={stats.totalRoutines} color="#FFA500" />
       </div>

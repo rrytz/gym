@@ -73,13 +73,13 @@ const Dashboard = ({ userData, setActiveTab }) => {
 
       <div style={{ display: 'flex', gap: '20px', flexWrap: 'wrap' }}>
         <StatCard icon={Flame} label="Total Workouts" value={workouts.length} color="#FF3B30" />
-        <StatCard icon={TrendingUp} label="Total Volume" value={`${(totalVolume/1000).toFixed(1)}k kg`} color="#00F2FF" />
+        <StatCard icon={TrendingUp} label="Total Volume" value={`${(totalVolume/1000).toFixed(1)}k kg`} color="var(--primary)" />
         <StatCard icon={Trophy} label="Active Goals" value={goals.length} color="#BD00FF" />
         <StatCard icon={Calendar} label="Avg/Week" value={workouts.length > 0 ? (workouts.length / 2).toFixed(1) : 0} color="#FFA500" />
       </div>
 
       {/* AI Recommendation Section */}
-      <div className="glass-card animate-fade-in" style={{ padding: '24px', border: '1px solid rgba(0, 242, 255, 0.2)', background: 'linear-gradient(135deg, rgba(0, 242, 255, 0.05) 0%, transparent 100%)' }}>
+      <div className="glass-card animate-fade-in" style={{ padding: '24px', border: '1px solid rgba(0, 242, 254, 0.2)', background: 'linear-gradient(135deg, rgba(0, 242, 254, 0.05) 0%, transparent 100%)' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
           <div style={{ padding: '12px', background: 'var(--primary)', borderRadius: '15px', color: '#000' }}>
             <recommendation.icon size={24} />
