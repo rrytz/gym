@@ -316,7 +316,7 @@ const Navbar = ({ activeTab, setActiveTab, session }) => {
           backdropFilter: 'blur(20px)',
         }}
       >
-        {[...mainItems.slice(0, 3), ...trainingItems.slice(0, 1)].map(item => (
+        {[...mainItems.slice(0, 2), ...trainingItems.slice(0, 1), ...toolsItems.slice(0, 2)].map(item => (
           <NavItem
             key={item.id}
             icon={item.icon}
