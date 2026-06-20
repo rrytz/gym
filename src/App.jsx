@@ -13,6 +13,7 @@ import WeightTracker from './components/WeightTracker';
 import GoalManager from './components/GoalManager';
 import ErrorBoundary from './components/ErrorBoundary';
 import DailySpinWheel from './components/DailySpinWheel';
+import InstallPrompt from './components/InstallPrompt';
 import { motion, AnimatePresence } from 'framer-motion';
 import { supabase } from './supabaseClient';
 import Auth from './components/Auth';
@@ -224,6 +225,9 @@ function App() {
     <ErrorBoundary>
       <div className="app-container">
         <Navbar activeTab={activeTab} setActiveTab={setActiveTab} session={session} />
+
+        {/* Install App Banner */}
+        <InstallPrompt />
 
         {/* Daily Spin Wheel Modal */}
         <AnimatePresence>
