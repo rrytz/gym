@@ -81,26 +81,53 @@ const Navbar = ({ activeTab, setActiveTab, session }) => {
           flexShrink: 0,
         }}
       >
-        {/* Logo */}
-        <div style={{ marginBottom: '36px', paddingLeft: '4px' }}>
-          <div style={{
-            fontSize: '1.5rem',
-            fontWeight: '800',
-            color: 'var(--text)',
-            letterSpacing: '-0.02em',
-            lineHeight: 1,
-          }}>
-            Hyve<span style={{ color: 'var(--primary)' }}>.</span>
-          </div>
-          <div style={{
-            fontSize: '0.65rem',
-            color: 'var(--text-dim)',
-            textTransform: 'uppercase',
-            letterSpacing: '0.12em',
-            marginTop: '4px',
-            fontWeight: '500',
-          }}>
-            Your Fitness Buddy
+        {/* Logo — tropa fit */}
+        <div style={{ marginBottom: '36px', paddingLeft: '4px', display: 'flex', alignItems: 'center', gap: '12px' }}>
+          {/* Circle Icon with 3 dots */}
+          <svg width="46" height="46" viewBox="0 0 46 46" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ flexShrink: 0 }}>
+            {/* Outer circle */}
+            <circle cx="23" cy="23" r="21" stroke="#C9A84C" strokeWidth="2.5" fill="none" />
+            {/* Three dots arranged horizontally */}
+            <circle cx="13" cy="23" r="3.5" fill="#C9A84C" />
+            <circle cx="23" cy="23" r="3.5" fill="#C9A84C" />
+            <circle cx="33" cy="23" r="3.5" fill="#C9A84C" />
+          </svg>
+
+          {/* Text block */}
+          <div>
+            <div style={{ lineHeight: 1, marginBottom: '2px' }}>
+              <span style={{
+                fontSize: '1.25rem',
+                fontWeight: '700',
+                color: 'var(--text)',
+                letterSpacing: '-0.01em',
+                display: 'block',
+              }}>
+                tropa
+              </span>
+              <span style={{
+                fontSize: '1.25rem',
+                fontWeight: '700',
+                color: 'var(--primary)',
+                letterSpacing: '-0.01em',
+                display: 'block',
+                borderBottom: '2px solid var(--primary)',
+                paddingBottom: '2px',
+                lineHeight: 1.1,
+              }}>
+                fit
+              </span>
+            </div>
+            <div style={{
+              fontSize: '0.55rem',
+              color: 'var(--text-dim)',
+              textTransform: 'uppercase',
+              letterSpacing: '0.14em',
+              marginTop: '5px',
+              fontWeight: '500',
+            }}>
+              Sama-Sama Tayo
+            </div>
           </div>
         </div>
 
