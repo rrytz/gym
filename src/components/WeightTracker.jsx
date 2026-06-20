@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Scale, TrendingDown, Calendar, Plus, Camera, History, Target } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { Scale, TrendingDown, Calendar, Plus, Camera, History, Target, X, Upload } from 'lucide-react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { supabase } from '../supabaseClient';
 import { calculateLinearRegression } from '../utils/regression';
@@ -8,10 +8,16 @@ const WeightTracker = ({ session }) => {
   const [logs, setLogs] = useState([]);
   const [newWeight, setNewWeight] = useState('');
   const [prediction, setPrediction] = useState(null);
+  const [frontPhoto, setFrontPhoto] = useState(null);
+  const [sidePhoto, setSidePhoto] = useState(null);
+  const [showCamera, setShowCamera] = useState(null);
+  const videoRef = useRef(null);
+  const canvasRef = useRef(null);
 
   useEffect(() => {
     if (session) {
       fetchWeightLogs();
+      fetchProgressPhotos();
     }
   }, [session]);
 
@@ -68,6 +74,129 @@ const WeightTracker = ({ session }) => {
       setNewWeight('');
       fetchWeightLogs();
     }
+  };
+
+  const fetchProgressPhotos = async () => {
+    const { data, error } = await supabase
+      .from('user_progress_photos')
+      .select('*')
+      .eq('user_id', session.user.id)
+      .order('created_at', { ascending: false })
+      .limit(2);
+
+    if (data && data.length > 0) {
+      data.forEach(photo => {
+        if (photo.photo_type === 'front') {
+          setFrontPhoto(photo.photo_url);
+        } else if (photo.photo_type === 'side') {
+          setSidePhoto(photo.photo_url);
+        }
+      });
+    }
+  };
+
+  const startCamera = async (type) => {
+    setShowCamera(type);
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ 
+        video: { facingMode: type === 'front' ? 'user' : 'environment' } 
+      });
+      if (videoRef.current) {
+        videoRef.current.srcObject = stream;
+        videoRef.current.play();
+      }
+    } catch (error) {
+      console.error('Error accessing camera:', error);
+      alert('Unable to access camera. Please check permissions.');
+      setShowCamera(null);
+    }
+  };
+
+  const stopCamera = () => {
+    if (videoRef.current && videoRef.current.srcObject) {
+      const tracks = videoRef.current.srcObject.getTracks();
+      tracks.forEach(track => track.stop());
+      videoRef.current.srcObject = null;
+    }
+    setShowCamera(null);
+  };
+
+  const capturePhoto = async () => {
+    if (!videoRef.current || !canvasRef.current) return;
+    
+    const video = videoRef.current;
+    const canvas = canvasRef.current;
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(video, 0, 0);
+    
+    const imageData = canvas.toDataURL('image/jpeg');
+    
+    if (showCamera === 'front') {
+      setFrontPhoto(imageData);
+      await savePhotoToSupabase(imageData, 'front');
+    } else {
+      setSidePhoto(imageData);
+      await savePhotoToSupabase(imageData, 'side');
+    }
+    
+    stopCamera();
+  };
+
+  const savePhotoToSupabase = async (imageData, type) => {
+    try {
+      // Convert base64 to blob
+      const response = await fetch(imageData);
+      const blob = await response.blob();
+      const fileName = `${session.user.id}_${type}_${Date.now()}.jpg`;
+      
+      // Upload to Supabase storage
+      const { data: uploadData, error: uploadError } = await supabase.storage
+        .from('progress-photos')
+        .upload(fileName, blob);
+      
+      if (uploadError) throw uploadError;
+      
+      // Get public URL
+      const { data: { publicUrl } } = supabase.storage
+        .from('progress-photos')
+        .getPublicUrl(fileName);
+      
+      // Save to database
+      const { error: dbError } = await supabase
+        .from('user_progress_photos')
+        .insert([{
+          user_id: session.user.id,
+          photo_type: type,
+          photo_url: publicUrl
+        }]);
+      
+      if (dbError) throw dbError;
+      
+    } catch (error) {
+      console.error('Error saving photo:', error);
+      alert('Failed to save photo. Please try again.');
+    }
+  };
+
+  const handleFileUpload = async (event, type) => {
+    const file = event.target.files[0];
+    if (!file) return;
+    
+    const reader = new FileReader();
+    reader.onload = async (e) => {
+      const imageData = e.target.result;
+      if (type === 'front') {
+        setFrontPhoto(imageData);
+        await savePhotoToSupabase(imageData, 'front');
+      } else {
+        setSidePhoto(imageData);
+        await savePhotoToSupabase(imageData, 'side');
+      }
+    };
+    reader.readAsDataURL(file);
   };
 
   const currentWeight = logs.length > 0 ? logs[logs.length - 1].weight : 0;
@@ -155,15 +284,120 @@ const WeightTracker = ({ session }) => {
       <div className="dashboard-grid">
         <div className="glass-card" style={{ flex: 1, padding: '24px' }}>
           <h3>Progress Photos</h3>
-          <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', margin: '12px 0 20px' }}>Upload photos to see the physical changes.</p>
+          <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', margin: '12px 0 20px' }}>Capture or upload photos to track your physical changes.</p>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px' }}>
-            <div style={{ aspectRatio: '3/4', background: 'var(--surface-light)', borderRadius: '15px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', border: '2px dashed var(--glass-border)' }}>
-              <Camera size={24} color="var(--text-muted)" />
-              <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)', marginTop: '8px' }}>Add Front</span>
+            {/* Front Photo */}
+            <div style={{ position: 'relative' }}>
+              {frontPhoto ? (
+                <div style={{ aspectRatio: '3/4', borderRadius: '15px', overflow: 'hidden', position: 'relative' }}>
+                  <img src={frontPhoto} alt="Front" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  <button
+                    onClick={() => setFrontPhoto(null)}
+                    style={{
+                      position: 'absolute',
+                      top: '8px',
+                      right: '8px',
+                      background: 'rgba(0,0,0,0.6)',
+                      border: 'none',
+                      borderRadius: '50%',
+                      width: '32px',
+                      height: '32px',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      color: '#fff',
+                    }}
+                  >
+                    <X size={16} />
+                  </button>
+                </div>
+              ) : (
+                <div style={{ aspectRatio: '3/4', background: 'var(--surface-light)', borderRadius: '15px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', border: '2px dashed var(--glass-border)' }}>
+                  <Camera size={24} color="var(--text-muted)" />
+                  <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)', marginTop: '8px' }}>Add Front</span>
+                </div>
+              )}
+              <div style={{ display: 'flex', gap: '8px', marginTop: '8px' }}>
+                <button
+                  onClick={() => startCamera('front')}
+                  className="btn-secondary"
+                  style={{ flex: 1, fontSize: '0.75rem', padding: '8px' }}
+                >
+                  <Camera size={14} /> Camera
+                </button>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => handleFileUpload(e, 'front')}
+                  style={{ display: 'none' }}
+                  id="front-upload"
+                />
+                <label
+                  htmlFor="front-upload"
+                  className="btn-secondary"
+                  style={{ flex: 1, fontSize: '0.75rem', padding: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px', cursor: 'pointer' }}
+                >
+                  <Upload size={14} /> Upload
+                </label>
+              </div>
             </div>
-            <div style={{ aspectRatio: '3/4', background: 'var(--surface-light)', borderRadius: '15px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', border: '2px dashed var(--glass-border)' }}>
-              <Camera size={24} color="var(--text-muted)" />
-              <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)', marginTop: '8px' }}>Add Side</span>
+
+            {/* Side Photo */}
+            <div style={{ position: 'relative' }}>
+              {sidePhoto ? (
+                <div style={{ aspectRatio: '3/4', borderRadius: '15px', overflow: 'hidden', position: 'relative' }}>
+                  <img src={sidePhoto} alt="Side" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  <button
+                    onClick={() => setSidePhoto(null)}
+                    style={{
+                      position: 'absolute',
+                      top: '8px',
+                      right: '8px',
+                      background: 'rgba(0,0,0,0.6)',
+                      border: 'none',
+                      borderRadius: '50%',
+                      width: '32px',
+                      height: '32px',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      color: '#fff',
+                    }}
+                  >
+                    <X size={16} />
+                  </button>
+                </div>
+              ) : (
+                <div style={{ aspectRatio: '3/4', background: 'var(--surface-light)', borderRadius: '15px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', border: '2px dashed var(--glass-border)' }}>
+                  <Camera size={24} color="var(--text-muted)" />
+                  <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)', marginTop: '8px' }}>Add Side</span>
+                </div>
+              )}
+              <div style={{ display: 'flex', gap: '8px', marginTop: '8px' }}>
+                <button
+                  onClick={() => startCamera('side')}
+                  className="btn-secondary"
+                  style={{ flex: 1, fontSize: '0.75rem', padding: '8px' }}
+                >
+                  <Camera size={14} /> Camera
+                </button>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => handleFileUpload(e, 'side')}
+                  style={{ display: 'none' }}
+                  id="side-upload"
+                />
+                <label
+                  htmlFor="side-upload"
+                  className="btn-secondary"
+                  style={{ flex: 1, fontSize: '0.75rem', padding: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px', cursor: 'pointer' }}
+                >
+                  <Upload size={14} /> Upload
+                </label>
+              </div>
             </div>
           </div>
         </div>
@@ -184,6 +418,71 @@ const WeightTracker = ({ session }) => {
           </div>
         </div>
       </div>
+
+      {/* Camera Modal */}
+      {showCamera && (
+        <div style={{
+          position: 'fixed',
+          inset: 0,
+          background: 'rgba(0,0,0,0.9)',
+          zIndex: 1000,
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          padding: '20px',
+        }}>
+          <div style={{ position: 'relative', maxWidth: '640px', width: '100%' }}>
+            <video
+              ref={videoRef}
+              autoPlay
+              playsInline
+              style={{
+                width: '100%',
+                borderRadius: '12px',
+                background: '#000',
+              }}
+            />
+            <canvas ref={canvasRef} style={{ display: 'none' }} />
+            <button
+              onClick={stopCamera}
+              style={{
+                position: 'absolute',
+                top: '16px',
+                right: '16px',
+                background: 'rgba(255,255,255,0.2)',
+                border: 'none',
+                borderRadius: '50%',
+                width: '40px',
+                height: '40px',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: '#fff',
+              }}
+            >
+              <X size={20} />
+            </button>
+          </div>
+          <div style={{ display: 'flex', gap: '16px', marginTop: '24px' }}>
+            <button
+              onClick={capturePhoto}
+              className="btn-primary"
+              style={{ padding: '16px 32px', fontSize: '1rem' }}
+            >
+              <Camera size={20} /> Capture Photo
+            </button>
+            <button
+              onClick={stopCamera}
+              className="btn-secondary"
+              style={{ padding: '16px 32px', fontSize: '1rem' }}
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
