@@ -115,7 +115,10 @@ const WeightTracker = ({ session }) => {
   const stopCamera = () => {
     if (videoRef.current && videoRef.current.srcObject) {
       const tracks = videoRef.current.srcObject.getTracks();
-      tracks.forEach(track => track.stop());
+      tracks.forEach(track => {
+        track.stop();
+        track.enabled = false;
+      });
       videoRef.current.srcObject = null;
     }
     setShowCamera(null);
@@ -433,14 +436,29 @@ const WeightTracker = ({ session }) => {
           padding: '20px',
         }}>
           <div style={{ position: 'relative', maxWidth: '640px', width: '100%' }}>
+            <div style={{ 
+              position: 'absolute',
+              top: '16px',
+              left: '16px',
+              background: 'rgba(0,0,0,0.6)',
+              padding: '8px 16px',
+              borderRadius: '8px',
+              color: '#fff',
+              fontSize: '0.85rem',
+              zIndex: 10,
+            }}>
+              {showCamera === 'front' ? 'Front View' : 'Side View'}
+            </div>
             <video
               ref={videoRef}
               autoPlay
               playsInline
+              muted
               style={{
                 width: '100%',
                 borderRadius: '12px',
                 background: '#000',
+                aspectRatio: '16/9',
               }}
             />
             <canvas ref={canvasRef} style={{ display: 'none' }} />
@@ -460,6 +478,7 @@ const WeightTracker = ({ session }) => {
                 alignItems: 'center',
                 justifyContent: 'center',
                 color: '#fff',
+                zIndex: 10,
               }}
             >
               <X size={20} />
@@ -480,6 +499,14 @@ const WeightTracker = ({ session }) => {
             >
               Cancel
             </button>
+          </div>
+          <div style={{ 
+            marginTop: '16px', 
+            color: 'rgba(255,255,255,0.6)', 
+            fontSize: '0.8rem',
+            textAlign: 'center'
+          }}>
+            If camera doesn't appear, please allow camera access in your browser
           </div>
         </div>
       )}
