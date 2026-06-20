@@ -4,117 +4,17 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer
 } from 'recharts';
+import { calculatePRsFromWorkouts } from '../utils/prUtils';
 
 const PersonalRecords = ({ userData, setActiveTab }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedMuscle, setSelectedMuscle] = useState('All');
   const [historyModalEx, setHistoryModalEx] = useState(null);
 
-  // Dynamic PR Calculation from workout logs
   const prs = useMemo(() => {
-    const calculated = {};
-    if (!userData || !userData.workouts || !Array.isArray(userData.workouts)) return calculated;
-
-    // Traverse workouts from oldest to newest to build correct chronologies
-    const sortedWorkouts = [...userData.workouts].sort((a, b) => new Date(a.start_time || a.date) - new Date(b.start_time || b.date));
-
-    sortedWorkouts.forEach(workout => {
-      if (!workout.exercises || !Array.isArray(workout.exercises)) return;
-
-      workout.exercises.forEach(ex => {
-        if (!ex.name) return;
-        const name = ex.name;
-
-        // Try to identify muscle group based on standard database, default to General
-        let muscle = ex.muscle || 'General';
-        
-        // Muscle fallback matching based on typical exercises in database
-        const lowerName = name.toLowerCase();
-        if (lowerName.includes('bench') || lowerName.includes('press') || lowerName.includes('chest') || lowerName.includes('fly')) {
-          muscle = 'Chest';
-        } else if (lowerName.includes('squat') || lowerName.includes('leg') || lowerName.includes('calf') || lowerName.includes('lunge') || lowerName.includes('deadlift')) {
-          muscle = 'Legs';
-        } else if (lowerName.includes('pull') || lowerName.includes('row') || lowerName.includes('lat') || lowerName.includes('chin')) {
-          muscle = 'Back';
-        } else if (lowerName.includes('shoulder') || lowerName.includes('press') || lowerName.includes('raise') || lowerName.includes('shrug')) {
-          muscle = 'Shoulders';
-        } else if (lowerName.includes('curl') || lowerName.includes('tricep') || lowerName.includes('bicep') || lowerName.includes('pushdown') || lowerName.includes('arm')) {
-          muscle = 'Arms';
-        } else if (lowerName.includes('plank') || lowerName.includes('crunch') || lowerName.includes('situp') || lowerName.includes('abs')) {
-          muscle = 'Core';
-        }
-
-        if (!ex.sets || !Array.isArray(ex.sets)) return;
-
-        ex.sets.forEach(set => {
-          if (!set.completed) return;
-          const weight = parseFloat(set.weight) || 0;
-          const reps = parseInt(set.reps) || 0;
-          if (weight <= 0 || reps <= 0) return;
-
-          // Epley 1RM Formula
-          const est1RM = weight * (1 + reps / 30);
-          const dateStr = workout.start_time || workout.date || new Date().toISOString();
-          const formattedDate = new Date(dateStr).toLocaleDateString(undefined, {
-            month: 'short',
-            day: 'numeric',
-            year: 'numeric'
-          });
-
-          const setEntry = {
-            weight,
-            reps,
-            est1RM: Math.round(est1RM * 10) / 10,
-            date: formattedDate,
-            rawDate: dateStr,
-            workoutTitle: workout.title || 'Workout'
-          };
-
-          if (!calculated[name]) {
-            calculated[name] = {
-              name,
-              muscle,
-              maxWeight: weight,
-              maxReps: reps,
-              maxEst1RM: Math.round(est1RM * 10) / 10,
-              date: formattedDate,
-              rawDate: dateStr,
-              workoutTitle: workout.title || 'Workout',
-              history: [setEntry]
-            };
-          } else {
-            const current = calculated[name];
-            
-            // Check if this set sets a new standard weight PR
-            if (weight > current.maxWeight || (weight === current.maxWeight && reps > current.maxReps)) {
-              current.maxWeight = weight;
-              current.maxReps = reps;
-              current.date = formattedDate;
-              current.rawDate = dateStr;
-              current.workoutTitle = workout.title || 'Workout';
-            }
-
-            // Keep track of maximum 1RM
-            if (est1RM > current.maxEst1RM) {
-              current.maxEst1RM = Math.round(est1RM * 10) / 10;
-            }
-
-            // Only push distinct dates/volumes to clean up chart display
-            const exists = current.history.some(h => h.date === formattedDate && h.weight === weight);
-            if (!exists) {
-              current.history.push(setEntry);
-            }
-          }
-        });
-      });
-    });
-
-    // Sort history chronologically for Recharts
-    Object.keys(calculated).forEach(key => {
-      calculated[key].history.sort((a, b) => new Date(a.rawDate) - new Date(b.rawDate));
-    });
-
-    return calculated;
+    const fromWorkouts = calculatePRsFromWorkouts(userData?.workouts);
+    const stored = userData?.pr || {};
+    return { ...fromWorkouts, ...stored };
   }, [userData]);
 
   // Unique muscles available
@@ -314,7 +214,7 @@ const PersonalRecords = ({ userData, setActiveTab }) => {
               </div>
 
               {/* View History Button */}
-              {pr.history.length > 0 && (
+              {pr.history?.length > 0 && (
                 <button
                   onClick={() => setHistoryModalEx(pr)}
                   className="btn-secondary"

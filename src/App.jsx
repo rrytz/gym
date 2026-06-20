@@ -128,11 +128,12 @@ function App() {
     return () => clearInterval(interval);
   }, [restState.isResting, restState.isPaused, restState.remaining]);
 
-  const triggerRest = (seconds) => {
+  const triggerRest = (seconds, options = {}) => {
     const defaultSec = userData.settings?.restTimer || 60;
     const duration = typeof seconds === 'number' ? seconds : defaultSec;
     const autoStart = userData.settings?.autoStartRest !== false;
-    if (!autoStart) return;
+    const force = options.force === true;
+    if (!autoStart && !force) return;
 
     setRestState(prev => ({
       ...prev,
@@ -140,7 +141,7 @@ function App() {
       duration: duration,
       remaining: duration,
       isPaused: false,
-      isExpanded: true
+      isExpanded: force ? true : true
     }));
   };
 

@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { TrendingUp, Trophy, Flame, Calendar, ArrowRight, Sparkles, Target, Zap } from 'lucide-react';
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer
 } from 'recharts';
+import { calculatePRsFromWorkouts, getPRsThisWeek } from '../utils/prUtils';
 
 const StatCard = ({ label, value, sub }) => (
   <div className="glass-card" style={{ padding: '20px 24px' }}>
@@ -15,6 +16,13 @@ const StatCard = ({ label, value, sub }) => (
 const Dashboard = ({ userData, setActiveTab }) => {
   const workouts = userData.workouts || [];
   const goals = userData.goals || [];
+
+  const prsThisWeek = useMemo(() => {
+    const allPRs = calculatePRsFromWorkouts(workouts);
+    const stored = userData.pr || {};
+    const merged = { ...allPRs, ...stored };
+    return getPRsThisWeek(merged);
+  }, [workouts, userData.pr]);
 
   const getRecommendation = () => {
     if (workouts.length === 0)
@@ -131,9 +139,9 @@ const Dashboard = ({ userData, setActiveTab }) => {
             </div>
             <div className="glass-card" style={{ padding: '20px 24px' }}>
               <div className="stat-label" style={{ marginBottom: '8px' }}>PR This Week</div>
-              <div style={{ fontSize: '1rem', fontWeight: '600', color: 'var(--text-muted)', marginTop: '4px' }}>
-                {Object.keys(userData.pr || {}).length > 0
-                  ? `${Object.keys(userData.pr).length} tracked`
+              <div style={{ fontSize: '1rem', fontWeight: '600', color: prsThisWeek.length > 0 ? 'var(--primary)' : 'var(--text-muted)', marginTop: '4px' }}>
+                {prsThisWeek.length > 0
+                  ? `${prsThisWeek.length} new ${prsThisWeek.length === 1 ? 'record' : 'records'}`
                   : 'none yet'}
               </div>
             </div>
