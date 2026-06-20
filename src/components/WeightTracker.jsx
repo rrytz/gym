@@ -61,18 +61,40 @@ const WeightTracker = ({ session }) => {
   };
 
   const logWeight = async () => {
-    if (!newWeight) return;
-    const { data, error } = await supabase
-      .from('weight_logs')
-      .insert([{
-        user_id: session.user.id,
-        weight: parseFloat(newWeight)
-      }])
-      .select();
+    if (!newWeight || isNaN(parseFloat(newWeight))) {
+      alert('Please enter a valid weight');
+      return;
+    }
+    
+    if (!session || !session.user) {
+      alert('You must be logged in to log weight');
+      return;
+    }
 
-    if (!error) {
-      setNewWeight('');
-      fetchWeightLogs();
+    try {
+      console.log('Attempting to log weight:', parseFloat(newWeight));
+      const { data, error } = await supabase
+        .from('weight_logs')
+        .insert([{
+          user_id: session.user.id,
+          weight: parseFloat(newWeight)
+        }])
+        .select();
+
+      if (error) {
+        console.error('Error logging weight:', error);
+        alert('Failed to log weight: ' + error.message);
+        return;
+      }
+
+      if (data) {
+        console.log('Weight logged successfully:', data);
+        setNewWeight('');
+        fetchWeightLogs();
+      }
+    } catch (error) {
+      console.error('Unexpected error logging weight:', error);
+      alert('An unexpected error occurred. Please try again.');
     }
   };
 
