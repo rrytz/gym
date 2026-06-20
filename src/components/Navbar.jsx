@@ -1,4 +1,4 @@
-import { LayoutDashboard, Dumbbell, Calendar, Apple, Scale, ShieldCheck, Trophy, LogOut } from 'lucide-react';
+import { LayoutDashboard, Dumbbell, Calendar, Apple, Scale, ShieldCheck, Trophy, LogOut, Grid3x3 } from 'lucide-react';
 import { supabase } from '../supabaseClient';
 
 const NavItem = ({ icon: Icon, label, active, onClick, isMobile }) => (
@@ -51,6 +51,7 @@ const Navbar = ({ activeTab, setActiveTab, session }) => {
     { id: 'nutrition', label: 'Fuel', icon: Apple },
     { id: 'progress', label: 'Progress', icon: Scale },
     { id: 'routines', label: 'Plans', icon: Calendar },
+    { id: 'features', label: 'Features', icon: Grid3x3 },
   ];
 
   if (isAdmin) {
