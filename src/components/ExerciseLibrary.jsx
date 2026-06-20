@@ -2,18 +2,18 @@ import React, { useState } from 'react';
 import { Search, Info, History, PlayCircle, PlusCircle, Filter, Dumbbell, TrendingUp } from 'lucide-react';
 
 const exercisesData = [
-  { id: '1', name: 'Bench Press (Barbell)', muscle: 'Chest', equipment: 'Barbell', difficulty: 'Intermediate', category: 'Compound' },
-  { id: '2', name: 'Squat (High Bar)', muscle: 'Legs', equipment: 'Barbell', difficulty: 'Advanced', category: 'Compound' },
-  { id: '3', name: 'Deadlift (Conventional)', muscle: 'Back', equipment: 'Barbell', difficulty: 'Advanced', category: 'Compound' },
-  { id: '4', name: 'Overhead Press (Dumbbell)', muscle: 'Shoulders', equipment: 'Dumbbells', difficulty: 'Intermediate', category: 'Compound' },
-  { id: '5', name: 'Pull Ups', muscle: 'Back', equipment: 'Bodyweight', difficulty: 'Intermediate', category: 'Compound' },
-  { id: '6', name: 'Bicep Curls (Dumbbell)', muscle: 'Arms', equipment: 'Dumbbells', difficulty: 'Beginner', category: 'Isolation' },
-  { id: '7', name: 'Tricep Pushdowns', muscle: 'Arms', equipment: 'Cable', difficulty: 'Beginner', category: 'Isolation' },
-  { id: '8', name: 'Leg Press', muscle: 'Legs', equipment: 'Machine', difficulty: 'Beginner', category: 'Compound' },
-  { id: '9', name: 'Incline Dumbbell Press', muscle: 'Chest', equipment: 'Dumbbells', difficulty: 'Intermediate', category: 'Compound' },
-  { id: '10', name: 'Barbell Row', muscle: 'Back', equipment: 'Barbell', difficulty: 'Intermediate', category: 'Compound' },
-  { id: '11', name: 'Lateral Raises', muscle: 'Shoulders', equipment: 'Dumbbells', difficulty: 'Beginner', category: 'Isolation' },
-  { id: '12', name: 'Romanian Deadlift', muscle: 'Legs', equipment: 'Barbell', difficulty: 'Intermediate', category: 'Compound' },
+  { id: '1', name: 'Bench Press (Barbell)', muscle: 'Chest', equipment: 'Barbell', difficulty: 'Intermediate', category: 'Compound', image: 'https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=400&h=300&fit=crop' },
+  { id: '2', name: 'Squat (High Bar)', muscle: 'Legs', equipment: 'Barbell', difficulty: 'Advanced', category: 'Compound', image: 'https://images.unsplash.com/photo-1574680096145-d05b474e2155?w=400&h=300&fit=crop' },
+  { id: '3', name: 'Deadlift (Conventional)', muscle: 'Back', equipment: 'Barbell', difficulty: 'Advanced', category: 'Compound', image: 'https://images.unsplash.com/photo-1517836357463-d25dfeac3438?w=400&h=300&fit=crop' },
+  { id: '4', name: 'Overhead Press (Dumbbell)', muscle: 'Shoulders', equipment: 'Dumbbells', difficulty: 'Intermediate', category: 'Compound', image: 'https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?w=400&h=300&fit=crop' },
+  { id: '5', name: 'Pull Ups', muscle: 'Back', equipment: 'Bodyweight', difficulty: 'Intermediate', category: 'Compound', image: 'https://images.unsplash.com/photo-1598971639058-211a74a96aea?w=400&h=300&fit=crop' },
+  { id: '6', name: 'Bicep Curls (Dumbbell)', muscle: 'Arms', equipment: 'Dumbbells', difficulty: 'Beginner', category: 'Isolation', image: 'https://images.unsplash.com/photo-1583454110551-21f2fa2afe61?w=400&h=300&fit=crop' },
+  { id: '7', name: 'Tricep Pushdowns', muscle: 'Arms', equipment: 'Cable', difficulty: 'Beginner', category: 'Isolation', image: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=400&h=300&fit=crop' },
+  { id: '8', name: 'Leg Press', muscle: 'Legs', equipment: 'Machine', difficulty: 'Beginner', category: 'Compound', image: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=400&h=300&fit=crop' },
+  { id: '9', name: 'Incline Dumbbell Press', muscle: 'Chest', equipment: 'Dumbbells', difficulty: 'Intermediate', category: 'Compound', image: 'https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=400&h=300&fit=crop' },
+  { id: '10', name: 'Barbell Row', muscle: 'Back', equipment: 'Barbell', difficulty: 'Intermediate', category: 'Compound', image: 'https://images.unsplash.com/photo-1517836357463-d25dfeac3438?w=400&h=300&fit=crop' },
+  { id: '11', name: 'Lateral Raises', muscle: 'Shoulders', equipment: 'Dumbbells', difficulty: 'Beginner', category: 'Isolation', image: 'https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?w=400&h=300&fit=crop' },
+  { id: '12', name: 'Romanian Deadlift', muscle: 'Legs', equipment: 'Barbell', difficulty: 'Intermediate', category: 'Compound', image: 'https://images.unsplash.com/photo-1574680096145-d05b474e2155?w=400&h=300&fit=crop' },
 ];
 
 const ExerciseLibrary = ({ setActiveTab }) => {
@@ -238,14 +238,27 @@ const ExerciseLibrary = ({ setActiveTab }) => {
             <div style={{ 
               width: '100%', 
               height: '180px', 
-              background: 'linear-gradient(135deg, rgba(212, 175, 55, 0.1), rgba(212, 175, 55, 0.02))',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
               position: 'relative',
               borderBottom: '1px solid var(--glass-border)',
+              overflow: 'hidden',
             }}>
-              <Dumbbell size={64} color="rgba(212, 175, 55, 0.3)" />
+              <img 
+                src={ex.image} 
+                alt={ex.name}
+                style={{ 
+                  width: '100%', 
+                  height: '100%', 
+                  objectFit: 'cover',
+                  transition: 'transform 0.3s ease',
+                }}
+                onError={(e) => {
+                  e.currentTarget.style.display = 'none';
+                  e.currentTarget.parentElement.style.background = 'linear-gradient(135deg, rgba(212, 175, 55, 0.1), rgba(212, 175, 55, 0.02))';
+                  e.currentTarget.parentElement.style.display = 'flex';
+                  e.currentTarget.parentElement.style.alignItems = 'center';
+                  e.currentTarget.parentElement.style.justifyContent = 'center';
+                }}
+              />
               <div style={{
                 position: 'absolute',
                 top: '12px',

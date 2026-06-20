@@ -237,17 +237,31 @@ const Navbar = ({ activeTab, setActiveTab, session }) => {
               width: '36px',
               height: '36px',
               borderRadius: '50%',
-              background: 'linear-gradient(135deg, var(--primary), var(--primary-light))',
-              color: '#0A0A0A',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              fontWeight: '800',
-              fontSize: '0.85rem',
+              overflow: 'hidden',
               flexShrink: 0,
               boxShadow: '0 4px 12px rgba(212, 175, 55, 0.3)',
+              border: '2px solid var(--primary)',
             }}>
-              {initials}
+              <img 
+                src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100&h=100&fit=crop&crop=face"
+                alt="User Avatar"
+                style={{ 
+                  width: '100%', 
+                  height: '100%', 
+                  objectFit: 'cover',
+                }}
+                onError={(e) => {
+                  e.currentTarget.style.display = 'none';
+                  e.currentTarget.parentElement.style.background = 'linear-gradient(135deg, var(--primary), var(--primary-light))';
+                  e.currentTarget.parentElement.style.display = 'flex';
+                  e.currentTarget.parentElement.style.alignItems = 'center';
+                  e.currentTarget.parentElement.style.justifyContent = 'center';
+                  e.currentTarget.parentElement.style.color = '#0A0A0A';
+                  e.currentTarget.parentElement.style.fontWeight = '800';
+                  e.currentTarget.parentElement.style.fontSize = '0.85rem';
+                  e.currentTarget.parentElement.textContent = initials;
+                }}
+              />
             </div>
             <div style={{ minWidth: 0 }}>
               <p style={{ fontSize: '0.85rem', fontWeight: '700', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', color: 'var(--text)' }}>

@@ -96,8 +96,34 @@ const PersonalRecords = ({ userData, setActiveTab }) => {
       {/* Highlights Grid */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '16px' }}>
         <div className="glass-card" style={{ padding: '24px', display: 'flex', alignItems: 'center', gap: '16px' }}>
-          <div style={{ padding: '14px', borderRadius: '14px', background: 'rgba(212, 175, 55, 0.12)', color: 'var(--primary)' }}>
-            <Trophy size={28} />
+          <div style={{ 
+            width: '56px', 
+            height: '56px', 
+            borderRadius: '14px', 
+            background: 'rgba(212, 175, 55, 0.12)', 
+            color: 'var(--primary)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            overflow: 'hidden',
+          }}>
+            <img 
+              src="https://images.unsplash.com/photo-1565557623262-b51c2513a641?w=100&h=100&fit=crop"
+              alt="Trophy"
+              style={{ 
+                width: '100%', 
+                height: '100%', 
+                objectFit: 'cover',
+              }}
+              onError={(e) => {
+                e.currentTarget.style.display = 'none';
+                e.currentTarget.parentElement.innerHTML = '';
+                const icon = document.createElement('div');
+                icon.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>';
+                icon.style.color = 'var(--primary)';
+                e.currentTarget.parentElement.appendChild(icon);
+              }}
+            />
           </div>
           <div>
             <div className="stat-label">Total PRs</div>
@@ -106,8 +132,34 @@ const PersonalRecords = ({ userData, setActiveTab }) => {
         </div>
 
         <div className="glass-card" style={{ padding: '24px', display: 'flex', alignItems: 'center', gap: '16px' }}>
-          <div style={{ padding: '14px', borderRadius: '14px', background: 'rgba(212, 175, 55, 0.12)', color: 'var(--primary)' }}>
-            <TrendingUp size={28} />
+          <div style={{ 
+            width: '56px', 
+            height: '56px', 
+            borderRadius: '14px', 
+            background: 'rgba(212, 175, 55, 0.12)', 
+            color: 'var(--primary)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            overflow: 'hidden',
+          }}>
+            <img 
+              src="https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=100&h=100&fit=crop"
+              alt="Trending"
+              style={{ 
+                width: '100%', 
+                height: '100%', 
+                objectFit: 'cover',
+              }}
+              onError={(e) => {
+                e.currentTarget.style.display = 'none';
+                e.currentTarget.parentElement.innerHTML = '';
+                const icon = document.createElement('div');
+                icon.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>';
+                icon.style.color = 'var(--primary)';
+                e.currentTarget.parentElement.appendChild(icon);
+              }}
+            />
           </div>
           <div>
             <div className="stat-label">Avg Improvement</div>
@@ -118,8 +170,34 @@ const PersonalRecords = ({ userData, setActiveTab }) => {
         </div>
 
         <div className="glass-card" style={{ padding: '24px', display: 'flex', alignItems: 'center', gap: '16px' }}>
-          <div style={{ padding: '14px', borderRadius: '14px', background: 'rgba(212, 175, 55, 0.12)', color: 'var(--primary)' }}>
-            <Medal size={28} />
+          <div style={{ 
+            width: '56px', 
+            height: '56px', 
+            borderRadius: '14px', 
+            background: 'rgba(212, 175, 55, 0.12)', 
+            color: 'var(--primary)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            overflow: 'hidden',
+          }}>
+            <img 
+              src="https://images.unsplash.com/photo-1587280501635-68a0e82cd5ff?w=100&h=100&fit=crop"
+              alt="Medal"
+              style={{ 
+                width: '100%', 
+                height: '100%', 
+                objectFit: 'cover',
+              }}
+              onError={(e) => {
+                e.currentTarget.style.display = 'none';
+                e.currentTarget.parentElement.innerHTML = '';
+                const icon = document.createElement('div');
+                icon.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>';
+                icon.style.color = 'var(--primary)';
+                e.currentTarget.parentElement.appendChild(icon);
+              }}
+            />
           </div>
           <div>
             <div className="stat-label">Heaviest Lift</div>

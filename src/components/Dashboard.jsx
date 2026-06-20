@@ -265,8 +265,23 @@ const Dashboard = ({ userData, setActiveTab }) => {
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 0.6, duration: 0.5, type: 'spring' }}
+          style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
         >
-          <ProgressRing progress={todayWorkout.progress} size={140} strokeWidth={10} />
+          <img 
+            src="https://images.unsplash.com/photo-1517836357463-d25dfeac3438?w=300&h=300&fit=crop"
+            alt="Workout"
+            style={{ 
+              width: '200px', 
+              height: '200px', 
+              borderRadius: '50%',
+              objectFit: 'cover',
+              boxShadow: '0 20px 60px rgba(212, 175, 55, 0.2)',
+              border: '4px solid rgba(212, 175, 55, 0.3)',
+            }}
+          />
+          <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }}>
+            <ProgressRing progress={todayWorkout.progress} size={140} strokeWidth={10} />
+          </div>
         </motion.div>
       </motion.div>
 
