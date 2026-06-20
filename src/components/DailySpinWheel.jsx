@@ -3,18 +3,18 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { X, Zap, Trophy, ChevronDown, RefreshCw } from 'lucide-react';
 
 const EXERCISES = [
-  { name: 'Push-Ups',      emoji: '💪', sets: '3', reps: '15',    muscle: 'Chest',     color: '#FF3B30', tip: 'Keep your core tight and elbows at 45°.' },
-  { name: 'Squats',        emoji: '🦵', sets: '3', reps: '20',    muscle: 'Legs',      color: '#00C8FF', tip: 'Push your knees out and drive through your heels.' },
-  { name: 'Pull-Ups',      emoji: '🏋️', sets: '3', reps: '8',     muscle: 'Back',      color: '#0077FF', tip: 'Engage your lats before pulling. Dead hang at bottom.' },
-  { name: 'Plank',         emoji: '🧘', sets: '3', reps: '60s',   muscle: 'Core',      color: '#FFD700', tip: 'Squeeze your glutes and don\'t let your hips sag.' },
-  { name: 'Burpees',       emoji: '🔥', sets: '3', reps: '10',    muscle: 'Full Body', color: '#FF6B35', tip: 'Jump explosively and land softly on both feet.' },
-  { name: 'Lunges',        emoji: '🚶', sets: '3', reps: '12',    muscle: 'Legs',      color: '#BD00FF', tip: 'Keep your front knee aligned over your ankle.' },
-  { name: 'Mtn Climbers',  emoji: '⛰️', sets: '3', reps: '30s',   muscle: 'Core',      color: '#00E87A', tip: 'Drive knees toward chest with hip-width stance.' },
-  { name: 'Dips',          emoji: '💯', sets: '3', reps: '12',    muscle: 'Triceps',   color: '#FF69B4', tip: 'Lean slightly forward to hit triceps harder.' },
-  { name: 'Jump Rope',     emoji: '🏃', sets: '3', reps: '2min',  muscle: 'Cardio',    color: '#FFA500', tip: 'Stay on the balls of your feet, light and quick.' },
-  { name: 'Deadlifts',     emoji: '🏆', sets: '3', reps: '10',    muscle: 'Back',      color: '#20B2AA', tip: 'Keep the bar close to your shins and spine neutral.' },
-  { name: 'Crunches',      emoji: '💥', sets: '3', reps: '25',    muscle: 'Core',      color: '#9370DB', tip: 'Exhale as you crunch. Avoid pulling your neck.' },
-  { name: 'Box Jumps',     emoji: '⚡', sets: '3', reps: '10',    muscle: 'Power',     color: '#DC143C', tip: 'Land softly with bent knees. Step down, don\'t jump.' },
+  { name: 'Push-Ups',      emoji: '💪', sets: '3', reps: '15',    muscle: 'Chest',     color: '#C9A84C', tip: 'Keep your core tight and elbows at 45°.' },
+  { name: 'Squats',        emoji: '🦵', sets: '3', reps: '20',    muscle: 'Legs',      color: '#C9A84C', tip: 'Push your knees out and drive through your heels.' },
+  { name: 'Pull-Ups',      emoji: '🏋️', sets: '3', reps: '8',     muscle: 'Back',      color: '#C9A84C', tip: 'Engage your lats before pulling. Dead hang at bottom.' },
+  { name: 'Plank',         emoji: '🧘', sets: '3', reps: '60s',   muscle: 'Core',      color: '#C9A84C', tip: 'Squeeze your glutes and don\'t let your hips sag.' },
+  { name: 'Burpees',       emoji: '🔥', sets: '3', reps: '10',    muscle: 'Full Body', color: '#C9A84C', tip: 'Jump explosively and land softly on both feet.' },
+  { name: 'Lunges',        emoji: '🚶', sets: '3', reps: '12',    muscle: 'Legs',      color: '#C9A84C', tip: 'Keep your front knee aligned over your ankle.' },
+  { name: 'Mtn Climbers',  emoji: '⛰️', sets: '3', reps: '30s',   muscle: 'Core',      color: '#C9A84C', tip: 'Drive knees toward chest with hip-width stance.' },
+  { name: 'Dips',          emoji: '💯', sets: '3', reps: '12',    muscle: 'Triceps',   color: '#C9A84C', tip: 'Lean slightly forward to hit triceps harder.' },
+  { name: 'Jump Rope',     emoji: '🏃', sets: '3', reps: '2min',  muscle: 'Cardio',    color: '#C9A84C', tip: 'Stay on the balls of your feet, light and quick.' },
+  { name: 'Deadlifts',     emoji: '🏆', sets: '3', reps: '10',    muscle: 'Back',      color: '#C9A84C', tip: 'Keep the bar close to your shins and spine neutral.' },
+  { name: 'Crunches',      emoji: '💥', sets: '3', reps: '25',    muscle: 'Core',      color: '#C9A84C', tip: 'Exhale as you crunch. Avoid pulling your neck.' },
+  { name: 'Box Jumps',     emoji: '⚡', sets: '3', reps: '10',    muscle: 'Power',     color: '#C9A84C', tip: 'Land softly with bent knees. Step down, don\'t jump.' },
 ];
 
 const NUM_SEGMENTS = EXERCISES.length;
@@ -40,6 +40,12 @@ const DailySpinWheel = ({ onClose, onStartWorkout }) => {
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
 
+    // Create segments with nice warm colors
+    const colors = [
+      '#C9A84C', '#B5943B', '#A0802C', '#8C6C1E', '#785A12', '#644808',
+      '#C9A84C', '#B5943B', '#A0802C', '#8C6C1E', '#785A12', '#644808'
+    ];
+
     EXERCISES.forEach((ex, i) => {
       const startAngle = SEGMENT_ANGLE * i - Math.PI / 2;
       const endAngle = startAngle + SEGMENT_ANGLE;
@@ -49,10 +55,9 @@ const DailySpinWheel = ({ onClose, onStartWorkout }) => {
       ctx.moveTo(CENTER, CENTER);
       ctx.arc(CENTER, CENTER, RADIUS, startAngle, endAngle);
       ctx.closePath();
-      // Alternate slightly lighter/darker for visual separation
-      ctx.fillStyle = i % 2 === 0 ? ex.color : ex.color + 'CC';
+      ctx.fillStyle = colors[i % colors.length];
       ctx.fill();
-      ctx.strokeStyle = 'rgba(0,0,0,0.4)';
+      ctx.strokeStyle = 'rgba(20, 18, 16, 0.4)';
       ctx.lineWidth = 2;
       ctx.stroke();
 
@@ -85,8 +90,8 @@ const DailySpinWheel = ({ onClose, onStartWorkout }) => {
 
     // Center hub
     const hubGrad = ctx.createRadialGradient(CENTER, CENTER, 0, CENTER, CENTER, 38);
-    hubGrad.addColorStop(0, '#1C1C24');
-    hubGrad.addColorStop(1, '#08080A');
+    hubGrad.addColorStop(0, '#2D2820');
+    hubGrad.addColorStop(1, '#141210');
     ctx.beginPath();
     ctx.arc(CENTER, CENTER, 38, 0, 2 * Math.PI);
     ctx.fillStyle = hubGrad;
@@ -124,7 +129,7 @@ const DailySpinWheel = ({ onClose, onStartWorkout }) => {
       setResult(EXERCISES[targetIndex]);
       setTimeout(() => setShowResult(true), 300);
       // Save today's date so it doesn't show again today
-      localStorage.setItem('titanlog_last_spin', getTodayKey());
+      localStorage.setItem('tropafit_last_spin', getTodayKey());
     }, 5500);
   };
 
@@ -136,7 +141,7 @@ const DailySpinWheel = ({ onClose, onStartWorkout }) => {
       style={{
         position: 'fixed',
         inset: 0,
-        background: 'rgba(0,0,0,0.8)',
+        background: 'rgba(0,0,0,0.85)',
         backdropFilter: 'blur(12px)',
         zIndex: 9999,
         display: 'flex',
@@ -152,14 +157,14 @@ const DailySpinWheel = ({ onClose, onStartWorkout }) => {
         exit={{ scale: 0.85, opacity: 0 }}
         transition={{ type: 'spring', stiffness: 200, damping: 22 }}
         style={{
-          background: 'linear-gradient(145deg, #121217, #0D0D15)',
-          border: '1px solid rgba(0, 242, 254, 0.2)',
+          background: 'linear-gradient(145deg, #1A1815, #12100E)',
+          border: '1px solid rgba(201, 168, 76, 0.2)',
           borderRadius: '28px',
           padding: '32px 28px',
           width: '100%',
           maxWidth: '460px',
           position: 'relative',
-          boxShadow: '0 0 80px rgba(0, 242, 254, 0.1), 0 30px 60px rgba(0,0,0,0.5)',
+          boxShadow: '0 0 80px rgba(201, 168, 76, 0.1), 0 30px 60px rgba(0,0,0,0.6)',
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
@@ -193,14 +198,14 @@ const DailySpinWheel = ({ onClose, onStartWorkout }) => {
         {/* Header */}
         <div style={{ textAlign: 'center' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', marginBottom: '6px' }}>
-            <Zap size={18} color="#FFD700" fill="#FFD700" />
-            <span style={{ fontSize: '0.75rem', color: '#FFD700', fontWeight: '800', letterSpacing: '3px', textTransform: 'uppercase' }}>
+            <Zap size={18} color="#C9A84C" fill="#C9A84C" />
+            <span style={{ fontSize: '0.75rem', color: '#C9A84C', fontWeight: '800', letterSpacing: '3px', textTransform: 'uppercase' }}>
               Daily Challenge
             </span>
-            <Zap size={18} color="#FFD700" fill="#FFD700" />
+            <Zap size={18} color="#C9A84C" fill="#C9A84C" />
           </div>
           <h2 style={{ fontSize: '1.7rem', fontWeight: '900', letterSpacing: '-0.5px' }}>
-            Spin the <span className="neon-text">Wheel!</span>
+            Spin the <span style={{ color: 'var(--primary)' }}>Wheel!</span>
           </h2>
           <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', marginTop: '4px' }}>
             Spin once a day to get your bonus challenge exercise
@@ -214,7 +219,7 @@ const DailySpinWheel = ({ onClose, onStartWorkout }) => {
             position: 'absolute',
             top: '-2px',
             zIndex: 10,
-            filter: 'drop-shadow(0 0 6px rgba(0, 242, 254, 0.8))',
+            filter: 'drop-shadow(0 0 6px rgba(201, 168, 76, 0.8))',
           }}>
             <ChevronDown size={32} color="var(--primary)" strokeWidth={3} />
           </div>
@@ -225,8 +230,8 @@ const DailySpinWheel = ({ onClose, onStartWorkout }) => {
               borderRadius: '50%',
               overflow: 'hidden',
               boxShadow: isSpinning
-                ? '0 0 50px rgba(0, 242, 254, 0.4), 0 0 100px rgba(0, 242, 254, 0.15)'
-                : '0 0 30px rgba(0, 242, 254, 0.15)',
+                ? '0 0 50px rgba(201, 168, 76, 0.4), 0 0 100px rgba(201, 168, 76, 0.15)'
+                : '0 0 30px rgba(201, 168, 76, 0.15)',
               transition: 'box-shadow 0.5s ease',
             }}
           >
@@ -256,9 +261,9 @@ const DailySpinWheel = ({ onClose, onStartWorkout }) => {
             disabled={isSpinning}
             style={{
               background: isSpinning
-                ? 'rgba(0, 242, 254, 0.3)'
-                : 'linear-gradient(135deg, var(--primary), #0077FF)',
-              color: isSpinning ? 'rgba(0,0,0,0.5)' : '#000',
+                ? 'rgba(201, 168, 76, 0.3)'
+                : 'linear-gradient(135deg, var(--primary), #D6B75E)',
+              color: isSpinning ? 'rgba(0,0,0,0.5)' : '#141210',
               border: 'none',
               padding: '16px 48px',
               borderRadius: '50px',
@@ -267,7 +272,7 @@ const DailySpinWheel = ({ onClose, onStartWorkout }) => {
               cursor: isSpinning ? 'not-allowed' : 'pointer',
               letterSpacing: '2px',
               textTransform: 'uppercase',
-              boxShadow: isSpinning ? 'none' : '0 8px 30px rgba(0, 242, 254, 0.4)',
+              boxShadow: isSpinning ? 'none' : '0 8px 30px rgba(201, 168, 76, 0.4)',
               transition: 'all 0.3s ease',
               display: 'flex',
               alignItems: 'center',
@@ -299,8 +304,8 @@ const DailySpinWheel = ({ onClose, onStartWorkout }) => {
               transition={{ type: 'spring', stiffness: 200, damping: 20 }}
               style={{
                 width: '100%',
-                background: `linear-gradient(135deg, ${result.color}15, rgba(0,0,0,0))`,
-                border: `1px solid ${result.color}40`,
+                background: `linear-gradient(135deg, var(--primary)15, rgba(0,0,0,0))`,
+                border: `1px solid var(--primary)40`,
                 borderRadius: '20px',
                 padding: '20px',
               }}
@@ -310,8 +315,8 @@ const DailySpinWheel = ({ onClose, onStartWorkout }) => {
                   width: '54px',
                   height: '54px',
                   borderRadius: '16px',
-                  background: `${result.color}20`,
-                  border: `2px solid ${result.color}60`,
+                  background: 'rgba(201, 168, 76, 0.20)',
+                  border: '2px solid rgba(201, 168, 76, 0.60)',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
@@ -322,8 +327,8 @@ const DailySpinWheel = ({ onClose, onStartWorkout }) => {
                 </div>
                 <div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <Trophy size={14} color="#FFD700" fill="#FFD700" />
-                    <span style={{ fontSize: '0.7rem', color: '#FFD700', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '1px' }}>
+                    <Trophy size={14} color="var(--primary)" fill="var(--primary)" />
+                    <span style={{ fontSize: '0.7rem', color: 'var(--primary)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '1px' }}>
                       Today's Challenge
                     </span>
                   </div>
@@ -332,12 +337,12 @@ const DailySpinWheel = ({ onClose, onStartWorkout }) => {
                   </h3>
                   <span style={{
                     fontSize: '0.75rem',
-                    color: result.color,
+                    color: 'var(--primary)',
                     fontWeight: '700',
-                    background: `${result.color}15`,
+                    background: 'rgba(201, 168, 76, 0.15)',
                     padding: '2px 10px',
                     borderRadius: '20px',
-                    border: `1px solid ${result.color}30`,
+                    border: '1px solid rgba(201, 168, 76, 0.30)',
                   }}>
                     {result.muscle}
                   </span>
@@ -359,7 +364,7 @@ const DailySpinWheel = ({ onClose, onStartWorkout }) => {
                     padding: '10px 6px',
                     border: '1px solid rgba(255,255,255,0.07)',
                   }}>
-                    <div style={{ fontSize: '1.3rem', fontWeight: '800', color: result.color }}>{item.value}</div>
+                    <div style={{ fontSize: '1.3rem', fontWeight: '800', color: 'var(--primary)' }}>{item.value}</div>
                     <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', marginTop: '2px' }}>{item.label}</div>
                   </div>
                 ))}

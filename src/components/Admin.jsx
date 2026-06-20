@@ -60,11 +60,11 @@ const Admin = () => {
           <ShieldCheck size={24} color="var(--primary)" />
           <h2 style={{ fontSize: '2rem' }}>Admin Control Center</h2>
         </div>
-        <p style={{ color: 'var(--text-muted)' }}>Real-time overview of the TitanLog ecosystem.</p>
+        <p style={{ color: 'var(--text-muted)' }}>Real-time overview of the tropa fit ecosystem.</p>
       </header>
 
       <div style={{ display: 'flex', gap: '20px', flexWrap: 'wrap' }}>
-        <StatBox icon={Users} label="Total Registered Titans" value={stats.totalUsers} color="var(--primary)" />
+        <StatBox icon={Users} label="Total Registered Tropas" value={stats.totalUsers} color="var(--primary)" />
         <StatBox icon={Activity} label="Workouts Logged (Global)" value={stats.totalWorkouts} color="#BD00FF" />
         <StatBox icon={Database} label="Custom Routines Created" value={stats.totalRoutines} color="#FFA500" />
       </div>

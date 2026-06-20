@@ -69,12 +69,24 @@ const Auth = () => {
           background: 'var(--surface)',
         }}
       >
-        <header style={{ marginBottom: '40px' }}>
-          <h1 style={{ fontSize: '2.5rem', fontWeight: '900', letterSpacing: '-1px' }}>
-            TITAN<span style={{ color: '#D4AF37', textShadow: '0 0 10px rgba(212, 175, 55, 0.5)' }}>LOG</span>
-          </h1>
-          <p style={{ color: 'var(--text-muted)', fontSize: '0.75rem', letterSpacing: '0.12em', fontWeight: '500' }}>
-            PRO FITNESS TRACKER
+        <header style={{ marginBottom: '40px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '14px', marginBottom: '8px' }}>
+            <svg width="48" height="48" viewBox="0 0 46 46" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ flexShrink: 0 }}>
+              <circle cx="23" cy="23" r="21" stroke="#C9A84C" strokeWidth="2.5" fill="none" />
+              <circle cx="13" cy="23" r="3.5" fill="#C9A84C" />
+              <circle cx="23" cy="23" r="3.5" fill="#C9A84C" />
+              <circle cx="33" cy="23" r="3.5" fill="#C9A84C" />
+            </svg>
+            <div style={{ textAlign: 'left' }}>
+              <div style={{ fontSize: '1.6rem', fontWeight: '700', color: '#F0EDE8', lineHeight: 1, letterSpacing: '-0.01em' }}>tropa</div>
+              <div style={{
+                fontSize: '1.6rem', fontWeight: '700', color: '#C9A84C', lineHeight: 1.1, letterSpacing: '-0.01em',
+                borderBottom: '2px solid #C9A84C', paddingBottom: '2px'
+              }}>fit</div>
+            </div>
+          </div>
+          <p style={{ color: 'var(--text-muted)', fontSize: '0.65rem', letterSpacing: '0.14em', fontWeight: '500', textTransform: 'uppercase', marginTop: '6px' }}>
+            Sama-Sama Tayo
           </p>
         </header>
 

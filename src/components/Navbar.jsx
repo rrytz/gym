@@ -60,7 +60,7 @@ const Navbar = ({ activeTab, setActiveTab, session }) => {
     await supabase.auth.signOut();
   };
 
-  const username = session?.user?.email?.split('@')[0] || 'Titan';
+  const username = session?.user?.email?.split('@')[0] || 'Tropa';
   const initials = username.charAt(0).toUpperCase();
 
   return (

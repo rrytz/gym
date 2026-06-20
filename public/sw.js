@@ -1,5 +1,5 @@
-// TitanLog Service Worker - v4
-const CACHE_NAME = 'titanlog-v4';
+// tropa fit Service Worker - v5
+const CACHE_NAME = 'tropafit-v5';
 const STATIC_ASSETS = [
   '/',
   '/index.html',

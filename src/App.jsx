@@ -27,16 +27,28 @@ const LoadingScreen = () => (
     alignItems: 'center',
     justifyContent: 'center',
     background: 'var(--background)',
-    gap: '24px',
+    gap: '20px',
   }}>
-    <h1 style={{ fontSize: '2.5rem', fontWeight: '900', letterSpacing: '-1px' }}>
-      TITAN<span className="neon-text">LOG</span>
-    </h1>
+    {/* tropa fit logo */}
+    <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+      <svg width="52" height="52" viewBox="0 0 46 46" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="23" cy="23" r="21" stroke="#C9A84C" strokeWidth="2.5" fill="none" />
+        <circle cx="13" cy="23" r="3.5" fill="#C9A84C" />
+        <circle cx="23" cy="23" r="3.5" fill="#C9A84C" />
+        <circle cx="33" cy="23" r="3.5" fill="#C9A84C" />
+      </svg>
+      <div>
+        <div style={{ fontSize: '1.6rem', fontWeight: '700', color: '#F0EDE8', lineHeight: 1, letterSpacing: '-0.01em' }}>tropa</div>
+        <div style={{
+          fontSize: '1.6rem', fontWeight: '700', color: '#C9A84C', lineHeight: 1.1, letterSpacing: '-0.01em',
+          borderBottom: '2px solid #C9A84C', paddingBottom: '2px'
+        }}>fit</div>
+      </div>
+    </div>
     <div style={{
-      width: '44px',
-      height: '44px',
-      border: '3px solid rgba(0, 242, 255, 0.15)',
-      borderTop: '3px solid var(--primary)',
+      width: '36px', height: '36px',
+      border: '2px solid rgba(201, 168, 76, 0.15)',
+      borderTop: '2px solid #C9A84C',
       borderRadius: '50%',
       animation: 'spin 0.8s linear infinite',
     }} />
@@ -85,7 +97,7 @@ function App() {
   useEffect(() => {
     if (!session || sessionLoading) return;
     const todayKey = new Date().toISOString().slice(0, 10);
-    const lastSpin = localStorage.getItem('titanlog_last_spin');
+    const lastSpin = localStorage.getItem('tropafit_last_spin') || localStorage.getItem('titanlog_last_spin');
     if (lastSpin !== todayKey) {
       // Small delay so the app loads visually before modal pops
       const timer = setTimeout(() => setShowSpinWheel(true), 1200);
@@ -132,7 +144,7 @@ function App() {
   useEffect(() => {
     if (!session) {
       try {
-        const savedData = localStorage.getItem('titanlog_data');
+        const savedData = localStorage.getItem('tropafit_data') || localStorage.getItem('titanlog_data');
         if (savedData) {
           const parsed = JSON.parse(savedData);
           setUserData(prev => ({
@@ -153,7 +165,7 @@ function App() {
   useEffect(() => {
     if (userData.workouts.length > 0 || userData.routines.length > 0) {
       try {
-        localStorage.setItem('titanlog_data', JSON.stringify(userData));
+        localStorage.setItem('tropafit_data', JSON.stringify(userData));
       } catch (e) {
         console.warn('Failed to save local data:', e);
       }

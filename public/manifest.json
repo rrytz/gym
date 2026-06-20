@@ -1,13 +1,13 @@
 {
-  "name": "TitanLog - Premium Gym Tracker",
-  "short_name": "TitanLog",
+  "name": "tropa fit - Premium Gym Tracker",
+  "short_name": "tropa fit",
   "description": "The ultimate gym tracking, workout logging, and AI-powered fitness analytics app.",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
   "orientation": "portrait",
-  "background_color": "#08080A",
-  "theme_color": "#00F2FF",
+  "background_color": "#141210",
+  "theme_color": "#C9A84C",
   "categories": ["health", "fitness", "sports"],
   "lang": "en-US",
   "icons": [

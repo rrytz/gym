@@ -83,7 +83,7 @@ const Dashboard = ({ userData, setActiveTab }) => {
             fontStyle: 'italic',
             color: 'var(--primary)',
           }}>
-            Titan.
+            Tropa.
           </h1>
         </div>
         <button className="btn-primary" onClick={() => setActiveTab('workouts')}>

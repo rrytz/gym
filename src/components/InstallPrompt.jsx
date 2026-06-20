@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Download, X, Smartphone, Share } from 'lucide-react';
+import { Download, X, Smartphone } from 'lucide-react';
 
 const InstallPrompt = () => {
   const [showBanner, setShowBanner] = useState(false);
@@ -8,7 +8,7 @@ const InstallPrompt = () => {
   const [canInstall, setCanInstall] = useState(false);
 
   useEffect(() => {
-    const dismissed = localStorage.getItem('titanlog_install_dismissed');
+    const dismissed = localStorage.getItem('tropafit_install_dismissed') || localStorage.getItem('titanlog_install_dismissed');
     if (dismissed) return;
 
     // Detect iOS Safari
@@ -48,13 +48,13 @@ const InstallPrompt = () => {
     window.__installPromptEvent = null;
     setShowBanner(false);
     if (outcome === 'accepted') {
-      localStorage.setItem('titanlog_install_dismissed', '1');
+      localStorage.setItem('tropafit_install_dismissed', '1');
     }
   };
 
   const dismiss = () => {
     setShowBanner(false);
-    localStorage.setItem('titanlog_install_dismissed', '1');
+    localStorage.setItem('tropafit_install_dismissed', '1');
   };
 
   if (!showBanner) return null;
@@ -72,7 +72,7 @@ const InstallPrompt = () => {
           left: '12px',
           right: '12px',
           zIndex: 8000,
-          background: 'linear-gradient(135deg, rgba(10, 17, 24, 0.95), rgba(5, 10, 16, 0.95))',
+          background: 'linear-gradient(135deg, rgba(20, 18, 16, 0.95), rgba(12, 11, 10, 0.95))',
           border: '1px solid var(--primary)',
           borderRadius: '20px',
           padding: '16px 18px',
@@ -91,8 +91,8 @@ const InstallPrompt = () => {
           width: '46px',
           height: '46px',
           borderRadius: '12px',
-          background: 'linear-gradient(135deg, rgba(0,242,254,0.15), rgba(79,172,254,0.15))',
-          border: '1px solid rgba(0, 242, 254, 0.25)',
+          background: 'rgba(201, 168, 76, 0.15)',
+          border: '1px solid rgba(201, 168, 76, 0.25)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
@@ -116,7 +116,7 @@ const InstallPrompt = () => {
             }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <span style={{
-                  background: 'rgba(0,242,254,0.2)',
+                  background: 'rgba(201, 168, 76, 0.2)',
                   color: 'var(--primary)',
                   borderRadius: '50%',
                   width: '20px', height: '20px',
@@ -127,7 +127,7 @@ const InstallPrompt = () => {
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <span style={{
-                  background: 'rgba(0,242,254,0.2)',
+                  background: 'rgba(201, 168, 76, 0.2)',
                   color: 'var(--primary)',
                   borderRadius: '50%',
                   width: '20px', height: '20px',
@@ -138,7 +138,7 @@ const InstallPrompt = () => {
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <span style={{
-                  background: 'rgba(0,242,254,0.2)',
+                  background: 'rgba(201, 168, 76, 0.2)',
                   color: 'var(--primary)',
                   borderRadius: '50%',
                   width: '20px', height: '20px',
@@ -152,7 +152,7 @@ const InstallPrompt = () => {
         ) : (
           <div style={{ flex: 1, minWidth: 0 }}>
             <div style={{ fontWeight: '800', fontSize: '0.95rem', marginBottom: '3px' }}>
-              Install TitanLog
+              Install tropa fit
             </div>
             <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
               Add to your home screen — works offline too!
@@ -167,8 +167,8 @@ const InstallPrompt = () => {
               whileTap={{ scale: 0.95 }}
               onClick={handleInstall}
               style={{
-                background: 'linear-gradient(135deg, var(--primary), var(--secondary))',
-                color: '#000',
+                background: 'linear-gradient(135deg, var(--primary), #D6B75E)',
+                color: '#141210',
                 border: 'none',
                 padding: '9px 16px',
                 borderRadius: '10px',

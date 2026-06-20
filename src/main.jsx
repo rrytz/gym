@@ -15,18 +15,18 @@ if ('serviceWorker' in navigator) {
     navigator.serviceWorker
       .register('/sw.js')
       .then((reg) => {
-        console.log('[TitanLog] Service Worker registered:', reg.scope);
+        console.log('[tropa fit] Service Worker registered:', reg.scope);
 
         // Check for updates on each load
         reg.addEventListener('updatefound', () => {
           const newWorker = reg.installing;
           newWorker.addEventListener('statechange', () => {
             if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-              console.log('[TitanLog] New version available — reload to update.');
+              console.log('[tropa fit] New version available — reload to update.');
             }
           });
         });
       })
-      .catch((err) => console.warn('[TitanLog] SW registration failed:', err));
+      .catch((err) => console.warn('[tropa fit] SW registration failed:', err));
   });
 }
