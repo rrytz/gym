@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, X, Clock, Play, Check, Trash2, MoreVertical, Save, Dumbbell, Trophy } from 'lucide-react';
+import { Plus, X, Clock, Play, Check, Trash2, MoreVertical, Save, Dumbbell, Trophy, Sparkles } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { supabase } from '../supabaseClient';
 
-const WorkoutLogger = ({ userData, setUserData, setActiveTab, activeRoutine, setActiveRoutine, session }) => {
+const WorkoutLogger = ({ userData, setUserData, setActiveTab, activeRoutine, setActiveRoutine, session, triggerRest }) => {
   const [activeWorkout, setActiveWorkout] = useState({
     title: 'New Workout',
     startTime: new Date().toISOString(),
@@ -11,8 +11,6 @@ const WorkoutLogger = ({ userData, setUserData, setActiveTab, activeRoutine, set
   });
   const [isLogging, setIsLogging] = useState(false);
   const [workoutTimer, setWorkoutTimer] = useState(0); // Total workout duration
-  const [restTimer, setRestTimer] = useState(60); // Countdown rest timer
-  const [isResting, setIsResting] = useState(false);
   const [showRoutinePicker, setShowRoutinePicker] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
   const [sessionSummary, setSessionSummary] = useState(null);
@@ -27,25 +25,6 @@ const WorkoutLogger = ({ userData, setUserData, setActiveTab, activeRoutine, set
     }
     return () => clearInterval(interval);
   }, [isLogging]);
-
-  // Rest Timer Countdown
-  useEffect(() => {
-    let interval = null;
-    if (isResting && restTimer > 0) {
-      interval = setInterval(() => {
-        setRestTimer((prev) => prev - 1);
-      }, 1000);
-    } else if (restTimer === 0) {
-      setIsResting(false);
-      // Optional: Play a sound or vibrate
-    }
-    return () => clearInterval(interval);
-  }, [isResting, restTimer]);
-
-  const startRest = (seconds = 60) => {
-    setRestTimer(seconds);
-    setIsResting(true);
-  };
 
   // Auto-start routine if passed from another component
   useEffect(() => {
@@ -152,56 +131,127 @@ const WorkoutLogger = ({ userData, setUserData, setActiveTab, activeRoutine, set
   };
 
   const toggleSetComplete = (exerciseId, setId) => {
+    let setWasCompleted = false;
+    const updatedExercises = activeWorkout.exercises.map(ex => {
+      if (ex.instanceId === exerciseId) {
+        return {
+          ...ex,
+          sets: ex.sets.map(s => {
+            if (s.id === setId) {
+              const nextVal = !s.completed;
+              if (nextVal) setWasCompleted = true;
+              return { ...s, completed: nextVal };
+            }
+            return s;
+          })
+        };
+      }
+      return ex;
+    });
+
     setActiveWorkout({
       ...activeWorkout,
-      exercises: activeWorkout.exercises.map(ex => 
-        ex.instanceId === exerciseId 
-          ? { 
-              ...ex, 
-              sets: ex.sets.map(s => s.id === setId ? { ...s, completed: !s.completed } : s) 
-            }
-          : ex
-      )
+      exercises: updatedExercises
     });
+
+    if (setWasCompleted && triggerRest) {
+      triggerRest();
+    }
   };
 
-  const finishWorkout = async () => {
+  const finishWorkout = () => {
     const totalVolume = activeWorkout.exercises.reduce((acc, ex) => {
       return acc + ex.sets.reduce((sAcc, s) => sAcc + (Number(s.weight) * Number(s.reps) || 0), 0);
     }, 0);
 
     const totalSets = activeWorkout.exercises.reduce((acc, ex) => acc + ex.sets.length, 0);
 
-    const completedWorkout = {
-      title: activeWorkout.title,
-      start_time: activeWorkout.startTime,
-      end_time: new Date().toISOString(),
-      duration: workoutTimer,
-      volume: totalVolume,
-      sets: totalSets,
-      exercises: activeWorkout.exercises,
-      user_id: session.user.id
-    };
+    // Scan for PRs broken in this session
+    const sessionPRs = [];
+    activeWorkout.exercises.forEach(ex => {
+      const currentMaxSet = ex.sets
+        .filter(s => s.completed)
+        .reduce((max, s) => {
+          const w = parseFloat(s.weight) || 0;
+          return w > max.weight ? { weight: w, reps: parseInt(s.reps) || 0 } : max;
+        }, { weight: 0, reps: 0 });
 
-    // Save to Supabase
-    const { error } = await supabase.from('workouts').insert([completedWorkout]);
-    if (error) console.error('Cloud Sync Error:', error.message);
+      if (currentMaxSet.weight > 0) {
+        const previousMaxWeight = userData.workouts.reduce((maxW, w) => {
+          const matchEx = w.exercises?.find(prevEx => prevEx.name === ex.name);
+          if (!matchEx) return maxW;
+          const matchMax = matchEx.sets
+            .filter(s => s.completed)
+            .reduce((m, s) => Math.max(m, parseFloat(s.weight) || 0), 0);
+          return Math.max(maxW, matchMax);
+        }, 0);
 
-    setUserData({
-      ...userData,
-      workouts: [completedWorkout, ...userData.workouts]
+        if (currentMaxSet.weight > previousMaxWeight) {
+          sessionPRs.push({
+            exerciseName: ex.name,
+            weight: currentMaxSet.weight,
+            reps: currentMaxSet.reps,
+            isFirstTime: previousMaxWeight === 0
+          });
+        }
+      }
     });
 
     setSessionSummary({
       title: activeWorkout.title,
       volume: totalVolume,
       sets: totalSets,
-      duration: workoutTimer
+      duration: workoutTimer,
+      exercises: activeWorkout.exercises,
+      prsBroken: sessionPRs,
+      notes: '',
+      rpe: 7,
+      energy: 3
     });
 
-    setIsLogging(false);
+    setIsLogging(false); // Stop timer
     setShowSuccess(true);
+  };
+
+  const saveWorkoutSummary = async () => {
+    const completedWorkout = {
+      title: sessionSummary.title,
+      start_time: activeWorkout.startTime,
+      end_time: new Date().toISOString(),
+      duration: sessionSummary.duration,
+      volume: sessionSummary.volume,
+      sets: sessionSummary.sets,
+      exercises: sessionSummary.exercises,
+      user_id: session.user.id,
+      notes: sessionSummary.notes,
+      rpe: sessionSummary.rpe,
+      energy: sessionSummary.energy
+    };
+
+    // Save to Supabase (with retry logic)
+    let { error } = await supabase.from('workouts').insert([completedWorkout]);
+    if (error && error.message?.includes('column')) {
+      console.warn('Custom columns not found in database, retrying insert with standard columns...');
+      const fallbackWorkout = { ...completedWorkout };
+      delete fallbackWorkout.notes;
+      delete fallbackWorkout.rpe;
+      delete fallbackWorkout.energy;
+      const retry = await supabase.from('workouts').insert([fallbackWorkout]);
+      error = retry.error;
+    }
+    if (error) console.error('Cloud Sync Error:', error.message);
+
+    // Save locally
+    setUserData({
+      ...userData,
+      workouts: [completedWorkout, ...userData.workouts]
+    });
+
+    // Reset logging state
+    setShowSuccess(false);
+    setSessionSummary(null);
     setActiveWorkout({ title: 'New Workout', startTime: null, exercises: [] });
+    setActiveTab('dashboard');
   };
 
   return (
@@ -426,7 +476,7 @@ const WorkoutLogger = ({ userData, setUserData, setActiveTab, activeRoutine, set
                           <td style={{ padding: '12px 8px', textAlign: 'center' }}>
                             <button 
                               className="btn-secondary"
-                              onClick={() => startRest(60)}
+                              onClick={() => triggerRest && triggerRest(60)}
                               style={{ padding: '4px 8px', fontSize: '0.7rem', borderRadius: '4px', border: '1px solid var(--primary)30' }}
                             >
                               Rest
@@ -502,49 +552,7 @@ const WorkoutLogger = ({ userData, setUserData, setActiveTab, activeRoutine, set
         </>
       )}
 
-      {/* Rest Timer Overlay (Floating) */}
-      <AnimatePresence>
-        {isResting && (
-          <motion.div 
-            initial={{ y: 100, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            exit={{ y: 100, opacity: 0 }}
-            style={{ position: 'fixed', bottom: '100px', left: '50%', transform: 'translateX(-50%)', zIndex: 1000 }}
-          >
-            <div className="glass-card neon-border" style={{ 
-              padding: '16px 24px', 
-              display: 'flex', 
-              alignItems: 'center', 
-              gap: '20px', 
-              background: 'rgba(0,0,0,0.9)',
-              boxShadow: '0 0 30px rgba(0, 242, 254, 0.2)'
-            }}>
-              <div style={{ display: 'flex', flexDirection: 'column' }}>
-                <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '1px' }}>Resting</span>
-                <span style={{ fontSize: '1.8rem', fontWeight: '800', fontFamily: 'monospace', color: 'var(--primary)' }}>
-                  {Math.floor(restTimer / 60)}:{(restTimer % 60).toString().padStart(2, '0')}
-                </span>
-              </div>
-              <div style={{ display: 'flex', gap: '10px' }}>
-                <button 
-                  onClick={() => setRestTimer(prev => prev + 30)}
-                  style={{ color: '#fff', background: 'rgba(255,255,255,0.05)', padding: '10px', borderRadius: '10px', fontSize: '0.8rem' }}
-                >
-                  +30s
-                </button>
-                <button 
-                  onClick={() => setIsResting(false)}
-                  style={{ background: 'var(--accent)', color: '#fff', padding: '10px', borderRadius: '10px' }}
-                >
-                  <X size={20} />
-                </button>
-              </div>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* Success Modal */}
+      {/* Success Modal — Detailed Session Summary & Reflection */}
       <AnimatePresence>
         {showSuccess && sessionSummary && (
           <motion.div 
@@ -554,7 +562,7 @@ const WorkoutLogger = ({ userData, setUserData, setActiveTab, activeRoutine, set
             style={{ 
               position: 'fixed', 
               inset: 0, 
-              background: 'rgba(0,0,0,0.9)', 
+              background: 'rgba(0,0,0,0.85)', 
               backdropFilter: 'blur(15px)',
               zIndex: 3000,
               display: 'flex',
@@ -566,61 +574,184 @@ const WorkoutLogger = ({ userData, setUserData, setActiveTab, activeRoutine, set
             <motion.div 
               initial={{ scale: 0.9, y: 50 }}
               animate={{ scale: 1, y: 0 }}
-              className="glass-card neon-border"
+              exit={{ scale: 0.9, y: 50 }}
+              className="glass-card"
               style={{ 
                 width: '100%', 
-                maxWidth: '450px', 
-                padding: '40px', 
-                textAlign: 'center',
-                background: 'rgba(10, 10, 11, 0.8)',
-                boxShadow: '0 0 50px rgba(0, 242, 254, 0.15)'
+                maxWidth: '520px', 
+                padding: '30px', 
+                background: 'linear-gradient(135deg, #1C1A17, #12100E)',
+                border: '1px solid rgba(201, 168, 76, 0.25)',
+                boxShadow: '0 20px 50px rgba(0,0,0,0.6), 0 0 40px rgba(201, 168, 76, 0.1)',
+                maxHeight: '90vh',
+                overflowY: 'auto',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '20px'
               }}
             >
-              <div style={{ 
-                width: '100px', 
-                height: '100px', 
-                borderRadius: '50%', 
-                background: 'var(--primary)', 
-                color: '#000',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                margin: '0 auto 24px auto',
-                boxShadow: '0 0 30px var(--primary)'
-              }}>
-                <Trophy size={50} />
-              </div>
-              
-              <h2 style={{ fontSize: '2.2rem', marginBottom: '8px' }}>Workout Crushed!</h2>
-              <p style={{ color: 'var(--text-muted)', marginBottom: '30px', fontSize: '1.1rem' }}>
-                Outstanding effort, Ritz! You're one step closer to your goals.
-              </p>
-
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '12px', marginBottom: '30px' }}>
-                <div className="glass-card" style={{ padding: '16px', background: 'rgba(255,255,255,0.02)' }}>
-                  <p style={{ fontSize: '0.7rem', color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: '4px' }}>Volume</p>
-                  <p style={{ fontSize: '1.2rem', fontWeight: '800', color: 'var(--primary)' }}>{sessionSummary.volume}kg</p>
+              {/* Header */}
+              <div style={{ textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                <div style={{ 
+                  width: '74px', 
+                  height: '74px', 
+                  borderRadius: '50%', 
+                  background: 'rgba(201, 168, 76, 0.12)', 
+                  color: 'var(--primary)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  marginBottom: '16px',
+                  boxShadow: '0 0 20px rgba(201, 168, 76, 0.2)',
+                  border: '1px solid rgba(201, 168, 76, 0.3)'
+                }}>
+                  <Trophy size={36} />
                 </div>
-                <div className="glass-card" style={{ padding: '16px', background: 'rgba(255,255,255,0.02)' }}>
-                  <p style={{ fontSize: '0.7rem', color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: '4px' }}>Time</p>
-                  <p style={{ fontSize: '1.2rem', fontWeight: '800', color: 'var(--secondary)' }}>{Math.floor(sessionSummary.duration / 60)}m</p>
-                </div>
-                <div className="glass-card" style={{ padding: '16px', background: 'rgba(255,255,255,0.02)' }}>
-                  <p style={{ fontSize: '0.7rem', color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: '4px' }}>Sets</p>
-                  <p style={{ fontSize: '1.2rem', fontWeight: '800', color: 'var(--accent)' }}>{sessionSummary.sets}</p>
-                </div>
+                <h2 style={{ fontSize: '1.8rem', fontWeight: '900', color: '#FFF' }}>Workout Summary</h2>
+                <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', marginTop: '2px' }}>
+                  Outstanding effort, Tropa! Here is what you achieved today:
+                </p>
               </div>
 
-              <button 
-                className="btn-primary" 
-                style={{ width: '100%', padding: '16px', justifyContent: 'center', fontSize: '1.1rem' }}
-                onClick={() => {
-                  setShowSuccess(false);
-                  setActiveTab('dashboard');
-                }}
-              >
-                Return Home
-              </button>
+              {/* Stats Grid */}
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '12px' }}>
+                <div style={{ textAlign: 'center', padding: '14px 10px', background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.04)', borderRadius: '12px' }}>
+                  <span style={{ fontSize: '0.65rem', color: 'var(--text-muted)', textTransform: 'uppercase', display: 'block', marginBottom: '4px' }}>Volume</span>
+                  <span style={{ fontSize: '1.25rem', fontWeight: '900', color: 'var(--primary)' }}>{sessionSummary.volume}kg</span>
+                </div>
+                <div style={{ textAlign: 'center', padding: '14px 10px', background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.04)', borderRadius: '12px' }}>
+                  <span style={{ fontSize: '0.65rem', color: 'var(--text-muted)', textTransform: 'uppercase', display: 'block', marginBottom: '4px' }}>Active Time</span>
+                  <span style={{ fontSize: '1.25rem', fontWeight: '900', color: '#FFF' }}>{Math.floor(sessionSummary.duration / 60)}m {sessionSummary.duration % 60}s</span>
+                </div>
+                <div style={{ textAlign: 'center', padding: '14px 10px', background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.04)', borderRadius: '12px' }}>
+                  <span style={{ fontSize: '0.65rem', color: 'var(--text-muted)', textTransform: 'uppercase', display: 'block', marginBottom: '4px' }}>Sets</span>
+                  <span style={{ fontSize: '1.25rem', fontWeight: '900', color: 'var(--primary)' }}>{sessionSummary.sets}</span>
+                </div>
+              </div>
+
+              {/* PRs Broken Section */}
+              {sessionSummary.prsBroken && sessionSummary.prsBroken.length > 0 && (
+                <div style={{ background: 'rgba(201, 168, 76, 0.05)', border: '1px solid rgba(201, 168, 76, 0.2)', padding: '16px', borderRadius: '14px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px', color: 'var(--primary)' }}>
+                    <Sparkles size={16} />
+                    <span style={{ fontSize: '0.8rem', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.05em' }}>New Personal Records!</span>
+                  </div>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                    {sessionSummary.prsBroken.map((pr, idx) => (
+                      <div key={idx} style={{ fontSize: '0.82rem', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                        <span>🏆</span>
+                        <span>
+                          <strong>{pr.exerciseName}</strong>: {pr.weight}kg × {pr.reps} reps
+                          {pr.isFirstTime && <span style={{ fontSize: '0.68rem', color: 'var(--primary)', fontStyle: 'italic', marginLeft: '6px' }}>(First time logged!)</span>}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Reflections Section */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: '20px' }}>
+                <h4 style={{ fontSize: '1rem', fontWeight: '800', color: '#FFF' }}>How did it go?</h4>
+                
+                {/* Energy Slider */}
+                <div>
+                  <label style={{ fontSize: '0.78rem', color: 'var(--text-muted)', display: 'block', marginBottom: '8px' }}>Energy Level</label>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', gap: '10px' }}>
+                    {[
+                      { val: 1, label: '😩' },
+                      { val: 2, label: '🥱' },
+                      { val: 3, label: '🙂' },
+                      { val: 4, label: '⚡' },
+                      { val: 5, label: '🦁' },
+                    ].map(item => (
+                      <button
+                        key={item.val}
+                        onClick={() => setSessionSummary({ ...sessionSummary, energy: item.val })}
+                        style={{
+                          flex: 1,
+                          fontSize: '1.5rem',
+                          padding: '8px',
+                          borderRadius: '10px',
+                          border: sessionSummary.energy === item.val ? '2px solid var(--primary)' : '1px solid rgba(255,255,255,0.06)',
+                          background: sessionSummary.energy === item.val ? 'rgba(201, 168, 76, 0.1)' : 'transparent',
+                          cursor: 'pointer',
+                          transition: 'all 0.2s',
+                        }}
+                      >
+                        {item.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* RPE Selector */}
+                <div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                    <label style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>Difficulty (RPE)</label>
+                    <span style={{ fontSize: '0.85rem', fontWeight: '800', color: 'var(--primary)' }}>
+                      {sessionSummary.rpe} / 10
+                    </span>
+                  </div>
+                  <input
+                    type="range"
+                    min="1"
+                    max="10"
+                    step="1"
+                    value={sessionSummary.rpe}
+                    onChange={(e) => setSessionSummary({ ...sessionSummary, rpe: parseInt(e.target.value) })}
+                    style={{
+                      width: '100%',
+                      background: 'rgba(255,255,255,0.06)',
+                      borderRadius: '8px',
+                      outline: 'none',
+                      accentColor: 'var(--primary)',
+                      cursor: 'pointer',
+                      height: '6px'
+                    }}
+                  />
+                  <span style={{ fontSize: '0.68rem', color: 'var(--text-dim)', display: 'block', marginTop: '6px', fontStyle: 'italic' }}>
+                    {sessionSummary.rpe <= 4 && "Easy: Warm-up or recovery effort."}
+                    {(sessionSummary.rpe === 5 || sessionSummary.rpe === 6) && "Moderate: Comfortable working weight, felt light."}
+                    {(sessionSummary.rpe === 7 || sessionSummary.rpe === 8) && "Vigorous: Hard but manageable working weight. 2-3 reps left."}
+                    {sessionSummary.rpe === 9 && "Near Max: Extremely heavy. Only 1 rep left in the tank."}
+                    {sessionSummary.rpe === 10 && "Maximum Effort: Failed set or absolute limits. 0 reps left."}
+                  </span>
+                </div>
+
+                {/* Note Textarea */}
+                <div>
+                  <label style={{ fontSize: '0.78rem', color: 'var(--text-muted)', display: 'block', marginBottom: '6px' }}>Workout Notes</label>
+                  <textarea
+                    placeholder="Add comments on sleep, focus, pump, physical health, or performance..."
+                    value={sessionSummary.notes}
+                    onChange={(e) => setSessionSummary({ ...sessionSummary, notes: e.target.value })}
+                    style={{
+                      width: '100%',
+                      height: '80px',
+                      background: 'rgba(0,0,0,0.2)',
+                      border: '1px solid rgba(255,255,255,0.08)',
+                      borderRadius: '10px',
+                      padding: '10px 14px',
+                      color: '#FFF',
+                      fontSize: '0.85rem',
+                      outline: 'none',
+                      resize: 'none'
+                    }}
+                  />
+                </div>
+              </div>
+
+              {/* Action Buttons */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginTop: '10px' }}>
+                <button
+                  className="btn-primary"
+                  onClick={saveWorkoutSummary}
+                  style={{ width: '100%', padding: '16px', justifyContent: 'center', fontSize: '1rem', fontWeight: '800' }}
+                >
+                  <Save size={18} /> Save & Return Home
+                </button>
+              </div>
             </motion.div>
           </motion.div>
         )}

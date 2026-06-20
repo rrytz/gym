@@ -1,4 +1,4 @@
-import { LayoutDashboard, Dumbbell, Calendar, Apple, Scale, ShieldCheck, LogOut } from 'lucide-react';
+import { LayoutDashboard, Dumbbell, Calendar, Apple, Scale, ShieldCheck, Trophy, LogOut } from 'lucide-react';
 import { supabase } from '../supabaseClient';
 
 const NavItem = ({ icon: Icon, label, active, onClick, isMobile }) => (
@@ -47,6 +47,7 @@ const Navbar = ({ activeTab, setActiveTab, session }) => {
   const menuItems = [
     { id: 'dashboard', label: 'Home', icon: LayoutDashboard },
     { id: 'workouts', label: 'Workout', icon: Dumbbell },
+    { id: 'records', label: 'PRs', icon: Trophy },
     { id: 'nutrition', label: 'Fuel', icon: Apple },
     { id: 'progress', label: 'Progress', icon: Scale },
     { id: 'routines', label: 'Plans', icon: Calendar },
@@ -153,7 +154,13 @@ const Navbar = ({ activeTab, setActiveTab, session }) => {
           borderTop: '1px solid var(--glass-border)',
           marginTop: '16px',
         }}>
-          <div style={{ display: 'flex', gap: '10px', alignItems: 'center', minWidth: 0 }}>
+          <div 
+            onClick={() => setActiveTab('settings')}
+            style={{ display: 'flex', gap: '10px', alignItems: 'center', minWidth: 0, cursor: 'pointer' }}
+            title="Open Settings"
+            onMouseEnter={e => e.currentTarget.style.opacity = '0.8'}
+            onMouseLeave={e => e.currentTarget.style.opacity = '1'}
+          >
             <div style={{
               width: '30px',
               height: '30px',
