@@ -1,28 +1,43 @@
-import { LayoutDashboard, Dumbbell, Calendar, Apple, Scale, BookOpen, ShieldCheck, LogOut } from 'lucide-react';
+import { LayoutDashboard, Dumbbell, Calendar, Apple, Scale, ShieldCheck, LogOut } from 'lucide-react';
 import { supabase } from '../supabaseClient';
 
 const NavItem = ({ icon: Icon, label, active, onClick, isMobile }) => (
-  <button 
+  <button
     onClick={onClick}
-    className={`nav-item ${active ? 'active' : ''} ${isMobile ? 'mobile' : 'desktop'}`}
-    style={{ 
-      display: 'flex', 
-      flexDirection: isMobile ? 'column' : 'row', 
-      alignItems: 'center', 
-      gap: '12px',
-      padding: isMobile ? '10px' : '12px 16px',
-      background: active ? 'var(--primary)' : 'transparent',
+    className={`nav-item ${active ? 'active' : ''}`}
+    style={{
+      display: 'flex',
+      flexDirection: isMobile ? 'column' : 'row',
+      alignItems: 'center',
+      gap: isMobile ? '4px' : '14px',
+      padding: isMobile ? '10px 8px' : '10px 16px',
+      background: active ? 'rgba(201, 168, 76, 0.08)' : 'transparent',
       border: 'none',
-      color: active ? '#000000' : 'var(--text-muted)',
-      borderRadius: '12px',
+      color: active ? 'var(--primary)' : 'var(--text-muted)',
+      borderRadius: '6px',
       width: isMobile ? 'auto' : '100%',
       cursor: 'pointer',
-      transition: 'all 0.3s ease',
-      fontWeight: active ? '600' : '500'
+      transition: 'all 0.2s ease',
+      fontWeight: active ? '600' : '400',
+      textAlign: isMobile ? 'center' : 'left',
+    }}
+    onMouseEnter={e => {
+      if (!active) {
+        e.currentTarget.style.color = 'var(--text)';
+        e.currentTarget.style.background = 'rgba(255,255,255,0.04)';
+      }
+    }}
+    onMouseLeave={e => {
+      if (!active) {
+        e.currentTarget.style.color = 'var(--text-muted)';
+        e.currentTarget.style.background = 'transparent';
+      }
     }}
   >
-    <Icon size={20} strokeWidth={active ? 2.5 : 2} />
-    <span style={{ fontSize: isMobile ? '0.65rem' : '0.9rem' }}>{label}</span>
+    <Icon size={isMobile ? 20 : 16} strokeWidth={active ? 2 : 1.5} />
+    <span style={{ fontSize: isMobile ? '0.58rem' : '0.85rem', letterSpacing: isMobile ? '0.02em' : '0.01em' }}>
+      {label}
+    </span>
   </button>
 );
 
@@ -45,45 +60,54 @@ const Navbar = ({ activeTab, setActiveTab, session }) => {
     await supabase.auth.signOut();
   };
 
+  const username = session?.user?.email?.split('@')[0] || 'Titan';
+  const initials = username.charAt(0).toUpperCase();
+
   return (
     <>
-      {/* Desktop Sidebar */}
-      <nav className="desktop-nav" style={{ 
-        width: '280px', 
-        background: 'var(--surface)', 
-        borderRight: '1px solid var(--glass-border)', 
-        display: 'flex', 
-        flexDirection: 'column', 
-        padding: '2rem 1.5rem', 
-        height: '100vh', 
-        position: 'sticky', 
-        top: 0,
-        zIndex: 100
-      }}>
-        <div className="logo" style={{ 
-          fontSize: '1.8rem', 
-          fontWeight: 800, 
-          background: 'linear-gradient(to right, var(--primary), var(--secondary))', 
-          WebkitBackgroundClip: 'text', 
-          WebkitTextFillColor: 'transparent', 
-          marginBottom: '3rem', 
-          display: 'flex', 
-          alignItems: 'center', 
-          gap: '12px' 
-        }}>
-          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#00f2fe" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
-            <path d="M18 8h1a4 4 0 0 1 0 8h-1"/>
-            <path d="M6 8H5a4 4 0 0 0 0 8h1"/>
-            <line x1="2" y1="12" x2="6" y2="12"/>
-            <line x1="18" y1="12" x2="22" y2="12"/>
-            <rect x="6" y="4" width="12" height="16" rx="2"/>
-          </svg>
-          TitanLog
+      {/* ─── Desktop Sidebar ─────────────────────────────────── */}
+      <nav
+        className="desktop-nav"
+        style={{
+          width: '220px',
+          background: 'var(--surface)',
+          borderRight: '1px solid var(--glass-border)',
+          display: 'flex',
+          flexDirection: 'column',
+          padding: '28px 16px',
+          height: '100vh',
+          position: 'sticky',
+          top: 0,
+          flexShrink: 0,
+        }}
+      >
+        {/* Logo */}
+        <div style={{ marginBottom: '36px', paddingLeft: '4px' }}>
+          <div style={{
+            fontSize: '1.5rem',
+            fontWeight: '800',
+            color: 'var(--text)',
+            letterSpacing: '-0.02em',
+            lineHeight: 1,
+          }}>
+            Hyve<span style={{ color: 'var(--primary)' }}>.</span>
+          </div>
+          <div style={{
+            fontSize: '0.65rem',
+            color: 'var(--text-dim)',
+            textTransform: 'uppercase',
+            letterSpacing: '0.12em',
+            marginTop: '4px',
+            fontWeight: '500',
+          }}>
+            Your Fitness Buddy
+          </div>
         </div>
 
-        <div className="nav-items" style={{ display: 'flex', flexDirection: 'column', gap: '8px', flex: 1 }}>
+        {/* Nav Links */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', flex: 1 }}>
           {menuItems.map(item => (
-            <NavItem 
+            <NavItem
               key={item.id}
               icon={item.icon}
               label={item.label}
@@ -93,37 +117,78 @@ const Navbar = ({ activeTab, setActiveTab, session }) => {
           ))}
         </div>
 
-        <div className="nav-profile glass-card" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '15px' }}>
-          <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
-            <div className="avatar" style={{ width: '35px', height: '35px', borderRadius: '50%', background: 'var(--primary)', color: '#000', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '800' }}>
-              {session?.user?.email?.charAt(0).toUpperCase()}
+        {/* User Profile */}
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          padding: '12px',
+          borderTop: '1px solid var(--glass-border)',
+          marginTop: '16px',
+        }}>
+          <div style={{ display: 'flex', gap: '10px', alignItems: 'center', minWidth: 0 }}>
+            <div style={{
+              width: '30px',
+              height: '30px',
+              borderRadius: '50%',
+              background: 'var(--primary)',
+              color: '#0D0B09',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontWeight: '800',
+              fontSize: '0.75rem',
+              flexShrink: 0,
+            }}>
+              {initials}
             </div>
-            <div className="info">
-              <p className="name" style={{ fontSize: '0.8rem', fontWeight: '700' }}>{session?.user?.email?.split('@')[0]}</p>
-              <p className="status" style={{ fontSize: '0.65rem', color: 'var(--text-muted)' }}>{isAdmin ? 'Admin' : 'Member'}</p>
+            <div style={{ minWidth: 0 }}>
+              <p style={{ fontSize: '0.78rem', fontWeight: '600', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                {username}
+              </p>
+              <p style={{ fontSize: '0.62rem', color: 'var(--text-muted)' }}>
+                {isAdmin ? 'Admin' : 'Member'}
+              </p>
             </div>
           </div>
-          <button onClick={handleLogout} style={{ background: 'transparent', color: 'var(--text-muted)', border: 'none', cursor: 'pointer' }}>
-            <LogOut size={16} />
+          <button
+            onClick={handleLogout}
+            style={{
+              background: 'transparent',
+              color: 'var(--text-muted)',
+              border: 'none',
+              cursor: 'pointer',
+              padding: '4px',
+              display: 'flex',
+              alignItems: 'center',
+              borderRadius: '4px',
+              transition: 'color 0.2s',
+            }}
+            onMouseEnter={e => e.currentTarget.style.color = 'var(--primary)'}
+            onMouseLeave={e => e.currentTarget.style.color = 'var(--text-muted)'}
+          >
+            <LogOut size={14} />
           </button>
         </div>
       </nav>
 
-      {/* Mobile Bottom Nav */}
-      <nav className="mobile-nav" style={{ 
-        position: 'fixed', 
-        bottom: 0, 
-        left: 0, 
-        right: 0, 
-        justifyContent: 'space-around', 
-        padding: '10px', 
-        zIndex: 1000, 
-        background: 'var(--surface)',
-        borderTop: '1px solid var(--glass-border)',
-        borderRadius: '20px 20px 0 0' 
-      }}>
+      {/* ─── Mobile Bottom Nav ────────────────────────────────── */}
+      <nav
+        className="mobile-nav"
+        style={{
+          position: 'fixed',
+          bottom: 0,
+          left: 0,
+          right: 0,
+          justifyContent: 'space-around',
+          padding: '8px 4px',
+          zIndex: 1000,
+          background: 'var(--surface)',
+          borderTop: '1px solid var(--glass-border)',
+        }}
+      >
         {menuItems.map(item => (
-          <NavItem 
+          <NavItem
             key={item.id}
             icon={item.icon}
             label={item.label}

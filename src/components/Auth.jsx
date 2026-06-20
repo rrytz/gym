@@ -65,14 +65,15 @@ const Auth = () => {
           width: '100%',
           maxWidth: '420px',
           textAlign: 'center',
-          border: '1px solid rgba(0, 242, 254, 0.1)',
+          border: '1px solid var(--glass-border)',
+          background: 'var(--surface)',
         }}
       >
         <header style={{ marginBottom: '40px' }}>
           <h1 style={{ fontSize: '2.5rem', fontWeight: '900', letterSpacing: '-1px' }}>
-            TITAN<span className="neon-text">LOG</span>
+            TITAN<span style={{ color: '#D4AF37', textShadow: '0 0 10px rgba(212, 175, 55, 0.5)' }}>LOG</span>
           </h1>
-          <p style={{ color: 'var(--text-muted)', fontSize: '0.8rem', letterSpacing: '2px', fontWeight: '600' }}>
+          <p style={{ color: 'var(--text-muted)', fontSize: '0.75rem', letterSpacing: '0.12em', fontWeight: '500' }}>
             PRO FITNESS TRACKER
           </p>
         </header>
@@ -92,7 +93,7 @@ const Auth = () => {
               borderRadius: '12px',
               marginBottom: '20px',
               fontSize: '0.85rem',
-              border: '1px solid rgba(255, 59, 48, 0.2)',
+              border: '1px solid rgba(160, 59, 48, 0.35)',
               display: 'flex',
               alignItems: 'flex-start',
               gap: '10px',
@@ -115,7 +116,7 @@ const Auth = () => {
               borderRadius: '12px',
               marginBottom: '20px',
               fontSize: '0.85rem',
-              border: '1px solid rgba(0, 242, 100, 0.2)',
+              border: '1px solid rgba(0, 180, 80, 0.25)',
             }}
           >
             {successMessage}
