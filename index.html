@@ -45,6 +45,17 @@
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
   </head>
   <body>
+    <!-- Capture install prompt BEFORE React mounts (critical timing fix) -->
+    <script>
+      window.__installPromptEvent = null;
+      window.addEventListener('beforeinstallprompt', function(e) {
+        e.preventDefault();
+        window.__installPromptEvent = e;
+        // Notify React if it's already mounted
+        window.dispatchEvent(new CustomEvent('pwa-install-ready'));
+      });
+    </script>
+
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
   </body>
