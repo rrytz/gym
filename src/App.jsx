@@ -12,6 +12,7 @@ import Nutrition from './components/Nutrition';
 import WeightTracker from './components/WeightTracker';
 import GoalManager from './components/GoalManager';
 import ErrorBoundary from './components/ErrorBoundary';
+import DailySpinWheel from './components/DailySpinWheel';
 import { motion, AnimatePresence } from 'framer-motion';
 import { supabase } from './supabaseClient';
 import Auth from './components/Auth';
@@ -48,6 +49,7 @@ function App() {
   const [session, setSession] = useState(null);
   // null = still loading, false = confirmed no session, object = has session
   const [sessionLoading, setSessionLoading] = useState(true);
+  const [showSpinWheel, setShowSpinWheel] = useState(false);
   const [userData, setUserData] = useState({
     workouts: [],
     routines: [],
@@ -70,13 +72,25 @@ function App() {
       setSessionLoading(false);
     });
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session);
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, newSession) => {
+      setSession(newSession);
       setSessionLoading(false);
     });
 
     return () => subscription.unsubscribe();
   }, []);
+
+  // Show daily spin wheel once per day after login
+  useEffect(() => {
+    if (!session || sessionLoading) return;
+    const todayKey = new Date().toISOString().slice(0, 10);
+    const lastSpin = localStorage.getItem('titanlog_last_spin');
+    if (lastSpin !== todayKey) {
+      // Small delay so the app loads visually before modal pops
+      const timer = setTimeout(() => setShowSpinWheel(true), 1200);
+      return () => clearTimeout(timer);
+    }
+  }, [session, sessionLoading]);
 
   // Sync from Supabase on Login
   useEffect(() => {
@@ -201,10 +215,25 @@ function App() {
     }
   };
 
+  const handleSpinWorkout = (exercise) => {
+    // Pre-fill workout hint via activeTab navigation
+    setActiveTab('workouts');
+  };
+
   return (
     <ErrorBoundary>
       <div className="app-container">
         <Navbar activeTab={activeTab} setActiveTab={setActiveTab} session={session} />
+
+        {/* Daily Spin Wheel Modal */}
+        <AnimatePresence>
+          {showSpinWheel && (
+            <DailySpinWheel
+              onClose={() => setShowSpinWheel(false)}
+              onStartWorkout={handleSpinWorkout}
+            />
+          )}
+        </AnimatePresence>
 
         <main className="main-content">
           <AnimatePresence mode="wait">
