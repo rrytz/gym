@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Scale, TrendingDown, Calendar, Plus, Camera, History, Target, X, Upload } from 'lucide-react';
+import { Scale, TrendingDown, Calendar, Plus, Camera, History, Target, X, Upload, CheckCircle, Image as ImageIcon } from 'lucide-react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { supabase } from '../supabaseClient';
 import { calculateLinearRegression } from '../utils/regression';
@@ -11,6 +11,9 @@ const WeightTracker = ({ session }) => {
   const [frontPhoto, setFrontPhoto] = useState(null);
   const [sidePhoto, setSidePhoto] = useState(null);
   const [showCamera, setShowCamera] = useState(null);
+  const [showAlbum, setShowAlbum] = useState(false);
+  const [allPhotos, setAllPhotos] = useState([]);
+  const [uploadSuccess, setUploadSuccess] = useState(null);
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
 
@@ -103,14 +106,15 @@ const WeightTracker = ({ session }) => {
       .from('user_progress_photos')
       .select('*')
       .eq('user_id', session.user.id)
-      .order('created_at', { ascending: false })
-      .limit(2);
+      .order('created_at', { ascending: false });
 
     if (data && data.length > 0) {
+      setAllPhotos(data);
+      // Set latest front and side photos
       data.forEach(photo => {
-        if (photo.photo_type === 'front') {
+        if (photo.photo_type === 'front' && !frontPhoto) {
           setFrontPhoto(photo.photo_url);
-        } else if (photo.photo_type === 'side') {
+        } else if (photo.photo_type === 'side' && !sidePhoto) {
           setSidePhoto(photo.photo_url);
         }
       });
@@ -199,6 +203,13 @@ const WeightTracker = ({ session }) => {
         }]);
       
       if (dbError) throw dbError;
+      
+      // Show success notification
+      setUploadSuccess(`${type.charAt(0).toUpperCase() + type.slice(1)} photo saved successfully!`);
+      setTimeout(() => setUploadSuccess(null), 3000);
+      
+      // Refresh photos
+      await fetchProgressPhotos();
       
     } catch (error) {
       console.error('Error saving photo:', error);
@@ -308,8 +319,35 @@ const WeightTracker = ({ session }) => {
 
       <div className="dashboard-grid">
         <div className="glass-card" style={{ flex: 1, padding: '24px' }}>
-          <h3>Progress Photos</h3>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+            <h3>Progress Photos</h3>
+            <button
+              onClick={() => setShowAlbum(true)}
+              className="btn-secondary"
+              style={{ fontSize: '0.75rem', padding: '6px 12px' }}
+            >
+              <ImageIcon size={14} /> View Album
+            </button>
+          </div>
           <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', margin: '12px 0 20px' }}>Capture or upload photos to track your physical changes.</p>
+          
+          {uploadSuccess && (
+            <div style={{
+              background: 'rgba(34, 197, 94, 0.2)',
+              border: '1px solid rgba(34, 197, 94, 0.5)',
+              padding: '12px',
+              borderRadius: '8px',
+              marginBottom: '16px',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              color: '#22c55e'
+            }}>
+              <CheckCircle size={16} />
+              <span style={{ fontSize: '0.85rem' }}>{uploadSuccess}</span>
+            </div>
+          )}
+          
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px' }}>
             {/* Front Photo */}
             <div style={{ position: 'relative' }}>
@@ -529,6 +567,111 @@ const WeightTracker = ({ session }) => {
             textAlign: 'center'
           }}>
             If camera doesn't appear, please allow camera access in your browser
+          </div>
+        </div>
+      )}
+
+      {/* Photo Album Modal */}
+      {showAlbum && (
+        <div style={{
+          position: 'fixed',
+          inset: 0,
+          background: 'rgba(0,0,0,0.9)',
+          zIndex: 1000,
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          padding: '20px',
+        }}>
+          <div style={{ 
+            position: 'absolute',
+            top: '20px',
+            right: '20px',
+            background: 'rgba(255,255,255,0.1)',
+            border: 'none',
+            borderRadius: '50%',
+            width: '40px',
+            height: '40px',
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            color: '#fff',
+            zIndex: 10,
+          }}
+          onClick={() => setShowAlbum(false)}
+          >
+            <X size={20} />
+          </div>
+          
+          <div style={{ 
+            maxWidth: '1200px', 
+            width: '100%', 
+            maxHeight: '80vh',
+            overflowY: 'auto',
+            padding: '20px'
+          }}>
+            <h2 style={{ 
+              color: '#fff', 
+              marginBottom: '24px',
+              textAlign: 'center'
+            }}>
+              Progress Photo Album ({allPhotos.length} photos)
+            </h2>
+            
+            {allPhotos.length === 0 ? (
+              <div style={{ 
+                textAlign: 'center', 
+                color: 'rgba(255,255,255,0.6)',
+                padding: '60px 20px'
+              }}>
+                <ImageIcon size={48} style={{ marginBottom: '16px', opacity: 0.5 }} />
+                <p>No progress photos yet. Upload your first photo to start tracking!</p>
+              </div>
+            ) : (
+              <div style={{ 
+                display: 'grid', 
+                gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))',
+                gap: '16px'
+              }}>
+                {allPhotos.map((photo, index) => (
+                  <div key={index} style={{ 
+                    position: 'relative',
+                    borderRadius: '12px',
+                    overflow: 'hidden',
+                    aspectRatio: '3/4',
+                    background: 'var(--surface-light)'
+                  }}>
+                    <img 
+                      src={photo.photo_url} 
+                      alt={`${photo.photo_type} photo`}
+                      style={{ 
+                        width: '100%', 
+                        height: '100%', 
+                        objectFit: 'cover' 
+                      }}
+                    />
+                    <div style={{
+                      position: 'absolute',
+                      bottom: '0',
+                      left: '0',
+                      right: '0',
+                      background: 'linear-gradient(transparent, rgba(0,0,0,0.8))',
+                      padding: '12px',
+                      color: '#fff'
+                    }}>
+                      <div style={{ fontSize: '0.75rem', fontWeight: '600' }}>
+                        {photo.photo_type.charAt(0).toUpperCase() + photo.photo_type.slice(1)}
+                      </div>
+                      <div style={{ fontSize: '0.65rem', color: 'rgba(255,255,255,0.7)' }}>
+                        {new Date(photo.created_at).toLocaleDateString()}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         </div>
       )}
