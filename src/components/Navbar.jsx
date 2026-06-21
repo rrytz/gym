@@ -88,6 +88,8 @@ const Navbar = ({ activeTab, setActiveTab, session }) => {
   const toolsItems = [
     { id: 'nutrition', label: 'Nutrition', icon: Apple },
     { id: 'water', label: 'Water', icon: Droplets },
+    { id: 'reminders', label: 'Reminders', icon: Bell },
+    { id: 'weekly', label: 'Weekly Report', icon: Calendar },
     { id: 'profile', label: 'Profile', icon: User },
     { id: 'settings', label: 'Settings', icon: Settings },
   ];

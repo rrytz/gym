@@ -342,6 +342,8 @@ function App() {
         return <WaterIntake session={session} />;
       case 'reminders':
         return <Reminders session={session} />;
+      case 'weekly':
+        return <WeeklyProgress session={session} userData={userData} />;
       case 'guides':
         return <SplitGuides setActiveTab={setActiveTab} />;
       case 'admin':
@@ -420,4 +422,5 @@ function App() {
   );
 }
 
+export default App;
 export default App;
