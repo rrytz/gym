@@ -15,6 +15,11 @@ CREATE INDEX IF NOT EXISTS idx_water_intake_log_date ON public.water_intake_logs
 -- Enable Row Level Security
 ALTER TABLE public.water_intake_logs ENABLE ROW LEVEL SECURITY;
 
+-- Drop existing policies if they exist
+DROP POLICY IF EXISTS "Users can view own water intake logs" ON public.water_intake_logs;
+DROP POLICY IF EXISTS "Users can insert own water intake logs" ON public.water_intake_logs;
+DROP POLICY IF EXISTS "Users can delete own water intake logs" ON public.water_intake_logs;
+
 -- Create policies for water intake logs
 CREATE POLICY "Users can view own water intake logs" ON public.water_intake_logs FOR SELECT USING (auth.uid() = user_id);
 CREATE POLICY "Users can insert own water intake logs" ON public.water_intake_logs FOR INSERT WITH CHECK (auth.uid() = user_id);
@@ -31,6 +36,11 @@ CREATE TABLE IF NOT EXISTS public.water_goals (
 
 -- Enable Row Level Security
 ALTER TABLE public.water_goals ENABLE ROW LEVEL SECURITY;
+
+-- Drop existing policies if they exist
+DROP POLICY IF EXISTS "Users can view own water goals" ON public.water_goals;
+DROP POLICY IF EXISTS "Users can insert own water goals" ON public.water_goals;
+DROP POLICY IF EXISTS "Users can update own water goals" ON public.water_goals;
 
 -- Create policies for water goals
 CREATE POLICY "Users can view own water goals" ON public.water_goals FOR SELECT USING (auth.uid() = user_id);

@@ -24,6 +24,12 @@ CREATE INDEX IF NOT EXISTS idx_personal_records_date ON public.personal_records(
 -- Enable Row Level Security
 ALTER TABLE public.personal_records ENABLE ROW LEVEL SECURITY;
 
+-- Drop existing policies if they exist
+DROP POLICY IF EXISTS "Users can view own personal records" ON public.personal_records;
+DROP POLICY IF EXISTS "Users can insert own personal records" ON public.personal_records;
+DROP POLICY IF EXISTS "Users can update own personal records" ON public.personal_records;
+DROP POLICY IF EXISTS "Users can delete own personal records" ON public.personal_records;
+
 -- Create policies for personal records
 CREATE POLICY "Users can view own personal records" ON public.personal_records FOR SELECT USING (auth.uid() = user_id);
 CREATE POLICY "Users can insert own personal records" ON public.personal_records FOR INSERT WITH CHECK (auth.uid() = user_id);

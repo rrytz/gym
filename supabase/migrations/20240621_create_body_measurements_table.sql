@@ -25,6 +25,12 @@ CREATE INDEX IF NOT EXISTS idx_body_measurements_date ON public.body_measurement
 -- Enable Row Level Security
 ALTER TABLE public.body_measurements ENABLE ROW LEVEL SECURITY;
 
+-- Drop existing policies if they exist
+DROP POLICY IF EXISTS "Users can view own body measurements" ON public.body_measurements;
+DROP POLICY IF EXISTS "Users can insert own body measurements" ON public.body_measurements;
+DROP POLICY IF EXISTS "Users can update own body measurements" ON public.body_measurements;
+DROP POLICY IF EXISTS "Users can delete own body measurements" ON public.body_measurements;
+
 -- Create policies for body measurements
 CREATE POLICY "Users can view own body measurements" ON public.body_measurements FOR SELECT USING (auth.uid() = user_id);
 CREATE POLICY "Users can insert own body measurements" ON public.body_measurements FOR INSERT WITH CHECK (auth.uid() = user_id);

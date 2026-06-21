@@ -22,6 +22,12 @@ CREATE INDEX IF NOT EXISTS idx_reminders_enabled ON public.reminders(is_enabled)
 -- Enable Row Level Security
 ALTER TABLE public.reminders ENABLE ROW LEVEL SECURITY;
 
+-- Drop existing policies if they exist
+DROP POLICY IF EXISTS "Users can view own reminders" ON public.reminders;
+DROP POLICY IF EXISTS "Users can insert own reminders" ON public.reminders;
+DROP POLICY IF EXISTS "Users can update own reminders" ON public.reminders;
+DROP POLICY IF EXISTS "Users can delete own reminders" ON public.reminders;
+
 -- Create policies for reminders
 CREATE POLICY "Users can view own reminders" ON public.reminders FOR SELECT USING (auth.uid() = user_id);
 CREATE POLICY "Users can insert own reminders" ON public.reminders FOR INSERT WITH CHECK (auth.uid() = user_id);
@@ -48,6 +54,12 @@ CREATE INDEX IF NOT EXISTS idx_notifications_created_at ON public.notifications(
 
 -- Enable Row Level Security
 ALTER TABLE public.notifications ENABLE ROW LEVEL SECURITY;
+
+-- Drop existing policies if they exist
+DROP POLICY IF EXISTS "Users can view own notifications" ON public.notifications;
+DROP POLICY IF EXISTS "Users can insert own notifications" ON public.notifications;
+DROP POLICY IF EXISTS "Users can update own notifications" ON public.notifications;
+DROP POLICY IF EXISTS "Users can delete own notifications" ON public.notifications;
 
 -- Create policies for notifications
 CREATE POLICY "Users can view own notifications" ON public.notifications FOR SELECT USING (auth.uid() = user_id);

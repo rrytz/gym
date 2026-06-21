@@ -22,6 +22,12 @@ CREATE INDEX IF NOT EXISTS idx_meals_meal_time ON public.meals(meal_time);
 -- Enable Row Level Security
 ALTER TABLE public.meals ENABLE ROW LEVEL SECURITY;
 
+-- Drop existing policies if they exist
+DROP POLICY IF EXISTS "Users can view own meals" ON public.meals;
+DROP POLICY IF EXISTS "Users can insert own meals" ON public.meals;
+DROP POLICY IF EXISTS "Users can update own meals" ON public.meals;
+DROP POLICY IF EXISTS "Users can delete own meals" ON public.meals;
+
 -- Create policies for meals
 CREATE POLICY "Users can view own meals" ON public.meals FOR SELECT USING (auth.uid() = user_id);
 CREATE POLICY "Users can insert own meals" ON public.meals FOR INSERT WITH CHECK (auth.uid() = user_id);
@@ -43,6 +49,11 @@ CREATE TABLE IF NOT EXISTS public.nutrition_goals (
 
 -- Enable Row Level Security
 ALTER TABLE public.nutrition_goals ENABLE ROW LEVEL SECURITY;
+
+-- Drop existing policies if they exist
+DROP POLICY IF EXISTS "Users can view own nutrition goals" ON public.nutrition_goals;
+DROP POLICY IF EXISTS "Users can insert own nutrition goals" ON public.nutrition_goals;
+DROP POLICY IF EXISTS "Users can update own nutrition goals" ON public.nutrition_goals;
 
 -- Create policies for nutrition goals
 CREATE POLICY "Users can view own nutrition goals" ON public.nutrition_goals FOR SELECT USING (auth.uid() = user_id);
