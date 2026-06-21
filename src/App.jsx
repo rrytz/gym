@@ -11,6 +11,7 @@ import Admin from './components/Admin';
 import Nutrition from './components/Nutrition';
 import WeightTracker from './components/WeightTracker';
 import GoalManager from './components/GoalManager';
+import Profile from './components/Profile';
 import ErrorBoundary from './components/ErrorBoundary';
 import DailySpinWheel from './components/DailySpinWheel';
 import InstallPrompt from './components/InstallPrompt';
@@ -332,6 +333,8 @@ function App() {
         return <PersonalRecords userData={userData} setActiveTab={setActiveTab} />;
       case 'settings':
         return <Settings userData={userData} setUserData={setUserData} />;
+      case 'profile':
+        return <Profile session={session} />;
       case 'guides':
         return <SplitGuides setActiveTab={setActiveTab} />;
       case 'admin':

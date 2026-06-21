@@ -86,6 +86,7 @@ const Navbar = ({ activeTab, setActiveTab, session }) => {
 
   const toolsItems = [
     { id: 'nutrition', label: 'Nutrition', icon: Apple },
+    { id: 'profile', label: 'Profile', icon: User },
     { id: 'settings', label: 'Settings', icon: Settings },
   ];
 
