@@ -337,7 +337,7 @@ function App() {
       case 'admin':
         return <Admin />;
       case 'nutrition':
-        return <Nutrition userData={userData} setUserData={setUserData} />;
+        return <Nutrition userData={userData} setUserData={setUserData} session={session} />;
       case 'progress':
         return (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '40px' }}>
