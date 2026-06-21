@@ -15,6 +15,7 @@ import Profile from './components/Profile';
 import BodyMeasurements from './components/BodyMeasurements';
 import WaterIntake from './components/WaterIntake';
 import Reminders from './components/Reminders';
+import WeeklyProgress from './components/WeeklyProgress';
 import ErrorBoundary from './components/ErrorBoundary';
 import DailySpinWheel from './components/DailySpinWheel';
 import InstallPrompt from './components/InstallPrompt';
