@@ -52,9 +52,9 @@ const Nutrition = ({ userData, setUserData, session }) => {
         .from('nutrition_goals')
         .select('*')
         .eq('user_id', session.user.id)
-        .single();
+        .maybeSingle();
 
-      if (error && error.code !== 'PGRST116') {
+      if (error) {
         console.error('Error fetching nutrition goals:', error);
       }
 
