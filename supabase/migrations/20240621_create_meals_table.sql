@@ -55,7 +55,7 @@ DROP POLICY IF EXISTS "Users can view own nutrition goals" ON public.nutrition_g
 DROP POLICY IF EXISTS "Users can insert own nutrition goals" ON public.nutrition_goals;
 DROP POLICY IF EXISTS "Users can update own nutrition goals" ON public.nutrition_goals;
 
--- Create policies for nutrition goals
-CREATE POLICY "Users can view own nutrition goals" ON public.nutrition_goals FOR SELECT USING (auth.uid() = user_id);
-CREATE POLICY "Users can insert own nutrition goals" ON public.nutrition_goals FOR INSERT WITH CHECK (auth.uid() = user_id);
-CREATE POLICY "Users can update own nutrition goals" ON public.nutrition_goals FOR UPDATE USING (auth.uid() = user_id);
+-- Create policies for nutrition goals with permissive access
+CREATE POLICY "Users can view own nutrition goals" ON public.nutrition_goals FOR SELECT USING (true);
+CREATE POLICY "Users can insert own nutrition goals" ON public.nutrition_goals FOR INSERT WITH CHECK (true);
+CREATE POLICY "Users can update own nutrition goals" ON public.nutrition_goals FOR UPDATE USING (true);

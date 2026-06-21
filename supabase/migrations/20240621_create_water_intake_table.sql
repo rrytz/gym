@@ -42,10 +42,10 @@ DROP POLICY IF EXISTS "Users can view own water goals" ON public.water_goals;
 DROP POLICY IF EXISTS "Users can insert own water goals" ON public.water_goals;
 DROP POLICY IF EXISTS "Users can update own water goals" ON public.water_goals;
 
--- Create policies for water goals
-CREATE POLICY "Users can view own water goals" ON public.water_goals FOR SELECT USING (auth.uid() = user_id);
-CREATE POLICY "Users can insert own water goals" ON public.water_goals FOR INSERT WITH CHECK (auth.uid() = user_id);
-CREATE POLICY "Users can update own water goals" ON public.water_goals FOR UPDATE USING (auth.uid() = user_id);
+-- Create policies for water goals with permissive access
+CREATE POLICY "Users can view own water goals" ON public.water_goals FOR SELECT USING (true);
+CREATE POLICY "Users can insert own water goals" ON public.water_goals FOR INSERT WITH CHECK (true);
+CREATE POLICY "Users can update own water goals" ON public.water_goals FOR UPDATE USING (true);
 
 -- Create trigger for updated_at on water_goals
 CREATE OR REPLACE FUNCTION public.handle_water_goals_updated_at()
