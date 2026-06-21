@@ -69,7 +69,7 @@ const WeeklyProgress = ({ session, userData }) => {
         .gte('meal_date', startDateStr)
         .lte('meal_date', endDateStr);
 
-      // Calculate weekly stats
+      // Calculate weekly stats with null checks
       const totalWorkouts = workouts?.length || 0;
       const totalSets = workouts?.reduce((sum, w) => {
         if (!w.exercises) return sum;
@@ -148,6 +148,18 @@ const WeeklyProgress = ({ session, userData }) => {
       });
     } catch (error) {
       console.error('Error fetching weekly data:', error);
+      setWeeklyData({
+        totalWorkouts: 0,
+        totalSets: 0,
+        totalReps: 0,
+        totalVolume: 0,
+        avgDailyCalories: 0,
+        avgDailyWater: 0,
+        weightChange: null,
+        workoutStreak: 0,
+        dailyData: [],
+        weekRange: { start: new Date(), end: new Date() }
+      });
     } finally {
       setLoading(false);
     }

@@ -86,26 +86,65 @@ const Profile = ({ session }) => {
     try {
       const completion = calculateCompletion();
 
-      const { error } = await supabase
+      // Check if profile exists first
+      const { data: existingProfile, error: checkError } = await supabase
         .from('profiles')
-        .upsert({
-          id: session.user.id,
-          full_name: profile.full_name || null,
-          username: profile.username || null,
-          age: profile.age ? parseInt(profile.age) : null,
-          gender: profile.gender || null,
-          height_cm: profile.height_cm ? parseFloat(profile.height_cm) : null,
-          weight_kg: profile.weight_kg ? parseFloat(profile.weight_kg) : null,
-          fitness_goal: profile.fitness_goal || null,
-          target_weight_kg: profile.target_weight_kg ? parseFloat(profile.target_weight_kg) : null,
-          activity_level: profile.activity_level || null,
-          experience_level: profile.experience_level || null,
-          avatar_url: profile.avatar_url || null,
-          profile_completion: completion,
-          onboarding_completed: completion >= 80
-        }, {
-          onConflict: 'id'
-        });
+        .select('id')
+        .eq('id', session.user.id)
+        .single();
+
+      if (checkError && checkError.code !== 'PGRST116') {
+        console.error('Error checking profile:', checkError);
+        alert('Failed to save profile. Please try again.');
+        setSaving(false);
+        return;
+      }
+
+      let error;
+      if (existingProfile) {
+        // Update existing profile
+        const result = await supabase
+          .from('profiles')
+          .update({
+            full_name: profile.full_name || null,
+            username: profile.username || null,
+            age: profile.age ? parseInt(profile.age) : null,
+            gender: profile.gender || null,
+            height_cm: profile.height_cm ? parseFloat(profile.height_cm) : null,
+            weight_kg: profile.weight_kg ? parseFloat(profile.weight_kg) : null,
+            fitness_goal: profile.fitness_goal || null,
+            target_weight_kg: profile.target_weight_kg ? parseFloat(profile.target_weight_kg) : null,
+            activity_level: profile.activity_level || null,
+            experience_level: profile.experience_level || null,
+            avatar_url: profile.avatar_url || null,
+            profile_completion: completion,
+            onboarding_completed: completion >= 80
+          })
+          .eq('id', session.user.id);
+        error = result.error;
+      } else {
+        // Insert new profile
+        const result = await supabase
+          .from('profiles')
+          .insert([{
+            id: session.user.id,
+            email: session.user.email,
+            full_name: profile.full_name || null,
+            username: profile.username || null,
+            age: profile.age ? parseInt(profile.age) : null,
+            gender: profile.gender || null,
+            height_cm: profile.height_cm ? parseFloat(profile.height_cm) : null,
+            weight_kg: profile.weight_kg ? parseFloat(profile.weight_kg) : null,
+            fitness_goal: profile.fitness_goal || null,
+            target_weight_kg: profile.target_weight_kg ? parseFloat(profile.target_weight_kg) : null,
+            activity_level: profile.activity_level || null,
+            experience_level: profile.experience_level || null,
+            avatar_url: profile.avatar_url || null,
+            profile_completion: completion,
+            onboarding_completed: completion >= 80
+          }]);
+        error = result.error;
+      }
 
       if (error) throw error;
 
