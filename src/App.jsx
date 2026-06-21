@@ -12,6 +12,7 @@ import Nutrition from './components/Nutrition';
 import WeightTracker from './components/WeightTracker';
 import GoalManager from './components/GoalManager';
 import Profile from './components/Profile';
+import BodyMeasurements from './components/BodyMeasurements';
 import ErrorBoundary from './components/ErrorBoundary';
 import DailySpinWheel from './components/DailySpinWheel';
 import InstallPrompt from './components/InstallPrompt';
@@ -345,6 +346,7 @@ function App() {
         return (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '40px' }}>
             <WeightTracker session={session} />
+            <BodyMeasurements session={session} />
             <GoalManager session={session} userData={userData} onGoalUpdate={() => {}} />
           </div>
         );

@@ -76,6 +76,7 @@ const Navbar = ({ activeTab, setActiveTab, session }) => {
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
     { id: 'workouts', label: 'Workout', icon: Dumbbell },
     { id: 'progress', label: 'Progress', icon: Scale },
+    { id: 'measurements', label: 'Measurements', icon: Ruler },
   ];
 
   const trainingItems = [
