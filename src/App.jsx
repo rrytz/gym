@@ -333,7 +333,7 @@ function App() {
       case 'stats':
         return <Analytics userData={userData} setActiveTab={setActiveTab} session={session} />;
       case 'records':
-        return <PersonalRecords userData={userData} setActiveTab={setActiveTab} />;
+        return <PersonalRecords userData={userData} setActiveTab={setActiveTab} session={session} />;
       case 'settings':
         return <Settings userData={userData} setUserData={setUserData} />;
       case 'profile':

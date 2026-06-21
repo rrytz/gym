@@ -1,21 +1,95 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { Trophy, Search, Calendar, ChevronRight, BarChart2, Star, Sparkles, TrendingUp, X, ArrowUp, ArrowDown, Medal } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer
 } from 'recharts';
 import { calculatePRsFromWorkouts } from '../utils/prUtils';
+import { supabase } from '../supabaseClient';
 
-const PersonalRecords = ({ userData, setActiveTab }) => {
+const PersonalRecords = ({ userData, setActiveTab, session }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedMuscle, setSelectedMuscle] = useState('All');
   const [historyModalEx, setHistoryModalEx] = useState(null);
+  const [dbPRs, setDbPRs] = useState({});
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (session) {
+      fetchPersonalRecords();
+    }
+  }, [session]);
+
+  const fetchPersonalRecords = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('personal_records')
+        .select('*')
+        .eq('user_id', session.user.id)
+        .eq('is_active', true);
+
+      if (error) throw error;
+
+      // Convert database format to component format
+      const prMap = {};
+      data.forEach(pr => {
+        prMap[pr.exercise_name] = {
+          name: pr.exercise_name,
+          muscle: pr.muscle_group,
+          maxWeight: pr.max_weight,
+          maxReps: pr.max_reps,
+          maxEst1RM: pr.max_est_1rm,
+          date: new Date(pr.achieved_date).toLocaleDateString(undefined, {
+            month: 'short',
+            day: 'numeric',
+            year: 'numeric'
+          }),
+          rawDate: pr.achieved_date,
+          workoutTitle: pr.workout_title || 'Workout',
+          history: [],
+          id: pr.id
+        };
+      });
+
+      setDbPRs(prMap);
+    } catch (error) {
+      console.error('Error fetching personal records:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const savePersonalRecord = async (prData) => {
+    try {
+      const { error } = await supabase
+        .from('personal_records')
+        .upsert({
+          user_id: session.user.id,
+          exercise_name: prData.name,
+          muscle_group: prData.muscle,
+          max_weight: prData.maxWeight,
+          max_reps: prData.maxReps,
+          max_est_1rm: prData.maxEst1RM,
+          achieved_date: prData.rawDate,
+          workout_title: prData.workout_title,
+          is_active: true
+        }, {
+          onConflict: 'user_id,exercise_name'
+        });
+
+      if (error) throw error;
+      fetchPersonalRecords();
+    } catch (error) {
+      console.error('Error saving personal record:', error);
+    }
+  };
 
   const prs = useMemo(() => {
     const fromWorkouts = calculatePRsFromWorkouts(userData?.workouts);
     const stored = userData?.pr || {};
-    return { ...fromWorkouts, ...stored };
-  }, [userData]);
+    // Merge: DB PRs take priority, then stored PRs, then workout-calculated PRs
+    return { ...fromWorkouts, ...stored, ...dbPRs };
+  }, [userData, dbPRs]);
 
   // Unique muscles available
   const muscleGroups = ['All', 'Chest', 'Back', 'Legs', 'Shoulders', 'Arms', 'Core'];
