@@ -1,4 +1,4 @@
-import { LayoutDashboard, Dumbbell, Calendar, Apple, Scale, ShieldCheck, Trophy, LogOut, BookOpen, Settings, ChevronRight } from 'lucide-react';
+import { LayoutDashboard, Dumbbell, Calendar, Apple, Scale, ShieldCheck, Trophy, LogOut, BookOpen, Settings, ChevronRight, Droplets, Ruler, User } from 'lucide-react';
 import { supabase } from '../supabaseClient';
 
 const NavSection = ({ title, children }) => (
@@ -87,6 +87,7 @@ const Navbar = ({ activeTab, setActiveTab, session }) => {
 
   const toolsItems = [
     { id: 'nutrition', label: 'Nutrition', icon: Apple },
+    { id: 'water', label: 'Water', icon: Droplets },
     { id: 'profile', label: 'Profile', icon: User },
     { id: 'settings', label: 'Settings', icon: Settings },
   ];

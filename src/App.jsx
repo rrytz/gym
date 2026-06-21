@@ -336,6 +336,8 @@ function App() {
         return <Settings userData={userData} setUserData={setUserData} />;
       case 'profile':
         return <Profile session={session} />;
+      case 'water':
+        return <WaterIntake session={session} />;
       case 'guides':
         return <SplitGuides setActiveTab={setActiveTab} />;
       case 'admin':
