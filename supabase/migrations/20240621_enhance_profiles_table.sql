@@ -21,6 +21,9 @@ CREATE INDEX IF NOT EXISTS idx_profiles_onboarding ON public.profiles(onboarding
 
 -- Update RLS policies
 DROP POLICY IF EXISTS "Profiles are viewable by everyone" ON public.profiles;
+DROP POLICY IF EXISTS "Users can view own profile" ON public.profiles;
+DROP POLICY IF EXISTS "Users can update own profile" ON public.profiles;
+
 CREATE POLICY "Users can view own profile" ON public.profiles FOR SELECT USING (auth.uid() = id);
 CREATE POLICY "Users can update own profile" ON public.profiles FOR UPDATE USING (auth.uid() = id);
 
