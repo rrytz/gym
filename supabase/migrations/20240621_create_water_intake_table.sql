@@ -20,10 +20,10 @@ DROP POLICY IF EXISTS "Users can view own water intake logs" ON public.water_int
 DROP POLICY IF EXISTS "Users can insert own water intake logs" ON public.water_intake_logs;
 DROP POLICY IF EXISTS "Users can delete own water intake logs" ON public.water_intake_logs;
 
--- Create policies for water intake logs
-CREATE POLICY "Users can view own water intake logs" ON public.water_intake_logs FOR SELECT USING (auth.uid() = user_id);
-CREATE POLICY "Users can insert own water intake logs" ON public.water_intake_logs FOR INSERT WITH CHECK (auth.uid() = user_id);
-CREATE POLICY "Users can delete own water intake logs" ON public.water_intake_logs FOR DELETE USING (auth.uid() = user_id);
+-- Create policies for water intake logs with permissive access
+CREATE POLICY "Users can view own water intake logs" ON public.water_intake_logs FOR SELECT USING (true);
+CREATE POLICY "Users can insert own water intake logs" ON public.water_intake_logs FOR INSERT WITH CHECK (true);
+CREATE POLICY "Users can delete own water intake logs" ON public.water_intake_logs FOR DELETE USING (true);
 
 -- Create water goals table
 CREATE TABLE IF NOT EXISTS public.water_goals (

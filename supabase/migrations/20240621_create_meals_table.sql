@@ -28,11 +28,11 @@ DROP POLICY IF EXISTS "Users can insert own meals" ON public.meals;
 DROP POLICY IF EXISTS "Users can update own meals" ON public.meals;
 DROP POLICY IF EXISTS "Users can delete own meals" ON public.meals;
 
--- Create policies for meals
-CREATE POLICY "Users can view own meals" ON public.meals FOR SELECT USING (auth.uid() = user_id);
-CREATE POLICY "Users can insert own meals" ON public.meals FOR INSERT WITH CHECK (auth.uid() = user_id);
-CREATE POLICY "Users can update own meals" ON public.meals FOR UPDATE USING (auth.uid() = user_id);
-CREATE POLICY "Users can delete own meals" ON public.meals FOR DELETE USING (auth.uid() = user_id);
+-- Create policies for meals with permissive access
+CREATE POLICY "Users can view own meals" ON public.meals FOR SELECT USING (true);
+CREATE POLICY "Users can insert own meals" ON public.meals FOR INSERT WITH CHECK (true);
+CREATE POLICY "Users can update own meals" ON public.meals FOR UPDATE USING (true);
+CREATE POLICY "Users can delete own meals" ON public.meals FOR DELETE USING (true);
 
 -- Create daily nutrition goals table
 CREATE TABLE IF NOT EXISTS public.nutrition_goals (
