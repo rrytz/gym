@@ -38,9 +38,9 @@ const WaterIntake = ({ session }) => {
         .from('water_goals')
         .select('*')
         .eq('user_id', session.user.id)
-        .single();
+        .maybeSingle();
 
-      if (goalError && goalError.code !== 'PGRST116') {
+      if (goalError) {
         console.error('Error fetching water goal:', goalError);
       }
 
