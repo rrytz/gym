@@ -13,6 +13,8 @@ import WeightTracker from './components/WeightTracker';
 import GoalManager from './components/GoalManager';
 import Profile from './components/Profile';
 import BodyMeasurements from './components/BodyMeasurements';
+import WaterIntake from './components/WaterIntake';
+import Reminders from './components/Reminders';
 import ErrorBoundary from './components/ErrorBoundary';
 import DailySpinWheel from './components/DailySpinWheel';
 import InstallPrompt from './components/InstallPrompt';
@@ -338,6 +340,8 @@ function App() {
         return <Profile session={session} />;
       case 'water':
         return <WaterIntake session={session} />;
+      case 'reminders':
+        return <Reminders session={session} />;
       case 'guides':
         return <SplitGuides setActiveTab={setActiveTab} />;
       case 'admin':

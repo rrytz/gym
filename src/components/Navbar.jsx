@@ -1,4 +1,4 @@
-import { LayoutDashboard, Dumbbell, Calendar, Apple, Scale, ShieldCheck, Trophy, LogOut, BookOpen, Settings, ChevronRight, Droplets, Ruler, User } from 'lucide-react';
+import { LayoutDashboard, Dumbbell, Calendar, Apple, Scale, ShieldCheck, Trophy, LogOut, BookOpen, Settings, ChevronRight, Droplets, Ruler, User, Bell } from 'lucide-react';
 import { supabase } from '../supabaseClient';
 
 const NavSection = ({ title, children }) => (
