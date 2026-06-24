@@ -1,7 +1,22 @@
 import React from 'react';
 import { User, Bell, Shield, Smartphone, Globe, LogOut, Check, Scale } from 'lucide-react';
+import { supabase } from '../supabaseClient';
 
 const Settings = ({ userData, setUserData }) => {
+  const [loggingOut, setLoggingOut] = React.useState(false);
+
+  const handleLogout = async () => {
+    setLoggingOut(true);
+    try {
+      await supabase.auth.signOut();
+      // Clear local data
+      localStorage.removeItem('tropafit_data');
+      localStorage.removeItem('titanlog_data');
+    } catch (error) {
+      console.error('Error logging out:', error);
+      setLoggingOut(false);
+    }
+  };
   // Safe extraction of settings
   const settings = userData?.settings || {
     unit: 'kg',
@@ -172,7 +187,7 @@ const Settings = ({ userData, setUserData }) => {
             </span>
           </div>
 
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid rgba(255,255,255,0.04)', paddingBottom: '16px' }}>
             <div>
               <h4 style={{ fontSize: '0.95rem', fontWeight: '600' }}>Workout Reminders</h4>
               <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '2px' }}>Enable push notifications reminding you to exercise.</p>
@@ -181,6 +196,30 @@ const Settings = ({ userData, setUserData }) => {
               <div style={{ width: '18px', height: '18px', background: '#141210', borderRadius: '50%', position: 'absolute', left: '3px', top: '3px' }}></div>
             </div>
           </div>
+
+          <button
+            onClick={handleLogout}
+            disabled={loggingOut}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '10px',
+              justifyContent: 'center',
+              background: 'rgba(255, 59, 48, 0.1)',
+              border: '1px solid rgba(255, 59, 48, 0.3)',
+              color: '#FF3B30',
+              padding: '12px 20px',
+              borderRadius: '8px',
+              fontSize: '0.9rem',
+              fontWeight: '600',
+              cursor: loggingOut ? 'not-allowed' : 'pointer',
+              transition: 'all 0.2s',
+              opacity: loggingOut ? 0.6 : 1
+            }}
+          >
+            <LogOut size={18} />
+            {loggingOut ? 'Logging out...' : 'Log Out'}
+          </button>
         </div>
       </div>
     </div>
