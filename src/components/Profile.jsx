@@ -32,11 +32,13 @@ const Profile = ({ session }) => {
     try {
       const { data, error } = await supabase
         .from('profiles')
-        .select('*')
+        .select('full_name, username, age, gender, height_cm, weight_kg, fitness_goal, target_weight_kg, activity_level, experience_level, avatar_url, onboarding_completed')
         .eq('id', session.user.id)
-        .single();
+        .maybeSingle();
 
-      if (error) throw error;
+      if (error && error.code !== 'PGRST116') {
+        throw error;
+      }
 
       if (data) {
         setProfile({
