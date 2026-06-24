@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { supabase } from '../supabaseClient';
 import { Mail, Lock, LogIn, UserPlus, WifiOff } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { trackLoginAttempt, clearLoginAttempts } from '../utils/security';
 
 const Auth = () => {
   const [loading, setLoading] = useState(false);
@@ -10,6 +11,7 @@ const Auth = () => {
   const [isSignUp, setIsSignUp] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
+  const [attemptsRemaining, setAttemptsRemaining] = useState(null);
 
   const handleAuth = async (e) => {
     e.preventDefault();
@@ -32,8 +34,33 @@ const Auth = () => {
           setSuccessMessage('Account created! Check your email for the confirmation link.');
         }
       } else {
+        // Track login attempt before signing in
+        const ipAddress = await fetch('https://api.ipify.org?format=json')
+          .then(res => res.json())
+          .then(data => data.ip)
+          .catch(() => null);
+        
+        const userAgent = navigator.userAgent;
+        
+        const attemptResult = await trackLoginAttempt(email, ipAddress, userAgent);
+        
+        if (attemptResult.blocked) {
+          setErrorMessage(attemptResult.message);
+          setLoading(false);
+          return;
+        }
+        
+        setAttemptsRemaining(attemptResult.remainingAttempts);
+
         const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-        if (error) setErrorMessage(error.message);
+        
+        if (error) {
+          setErrorMessage(error.message);
+        } else {
+          // Clear failed attempts on successful login
+          await clearLoginAttempts(email);
+          setAttemptsRemaining(null);
+        }
       }
     } catch (err) {
       // Network-level failure (Supabase paused / DNS error)
@@ -132,6 +159,24 @@ const Auth = () => {
             }}
           >
             {successMessage}
+          </motion.div>
+        )}
+
+        {attemptsRemaining !== null && attemptsRemaining < 5 && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            style={{
+              background: 'rgba(255, 193, 7, 0.1)',
+              color: '#FFC107',
+              padding: '12px',
+              borderRadius: '12px',
+              marginBottom: '20px',
+              fontSize: '0.85rem',
+              border: '1px solid rgba(255, 193, 7, 0.25)',
+            }}
+          >
+            {attemptsRemaining} login attempt{attemptsRemaining !== 1 ? 's' : ''} remaining before temporary lockout
           </motion.div>
         )}
 

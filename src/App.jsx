@@ -21,6 +21,7 @@ import DailySpinWheel from './components/DailySpinWheel';
 import InstallPrompt from './components/InstallPrompt';
 import RestTimer from './components/RestTimer';
 import PersonalRecords from './components/PersonalRecords';
+import AdminRoute from './components/AdminRoute';
 import { motion, AnimatePresence } from 'framer-motion';
 import { supabase } from './supabaseClient';
 import Auth from './components/Auth';
@@ -348,7 +349,11 @@ function App() {
       case 'guides':
         return <SplitGuides setActiveTab={setActiveTab} />;
       case 'admin':
-        return <Admin />;
+        return (
+          <AdminRoute session={session}>
+            <Admin />
+          </AdminRoute>
+        );
       case 'nutrition':
         return <Nutrition userData={userData} setUserData={setUserData} session={session} />;
       case 'progress':
