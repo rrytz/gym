@@ -124,36 +124,34 @@ const Navbar = ({ activeTab, setActiveTab, session }) => {
         }}
       >
         {/* Logo — tropa fit */}
-        <div style={{ marginBottom: '40px', paddingLeft: '4px', display: 'flex', alignItems: 'center', gap: '12px' }}>
+        <div style={{ marginBottom: '40px', paddingLeft: '4px', display: 'flex', alignItems: 'center', gap: '14px' }}>
           {/* Circle Icon with 3 dots */}
           <svg width="48" height="48" viewBox="0 0 46 46" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ flexShrink: 0 }}>
-            {/* Outer circle */}
-            <circle cx="23" cy="23" r="21" stroke="#D4AF37" strokeWidth="2.5" fill="none" />
-            {/* Three dots arranged horizontally */}
-            <circle cx="13" cy="23" r="3.5" fill="#D4AF37" />
-            <circle cx="23" cy="23" r="3.5" fill="#D4AF37" />
-            <circle cx="33" cy="23" r="3.5" fill="#D4AF37" />
+            <circle cx="23" cy="23" r="21" stroke="#C9A84C" strokeWidth="2.5" fill="none" />
+            <circle cx="13" cy="23" r="3.5" fill="#C9A84C" />
+            <circle cx="23" cy="23" r="3.5" fill="#C9A84C" />
+            <circle cx="33" cy="23" r="3.5" fill="#C9A84C" />
           </svg>
 
           {/* Text block */}
-          <div>
+          <div style={{ textAlign: 'left' }}>
             <div style={{ lineHeight: 1, marginBottom: '2px' }}>
               <span style={{
-                fontSize: '1.35rem',
-                fontWeight: '800',
-                color: 'var(--text)',
-                letterSpacing: '-0.02em',
+                fontSize: '1.6rem',
+                fontWeight: '700',
+                color: '#F0EDE8',
+                letterSpacing: '-0.01em',
                 display: 'block',
               }}>
                 tropa
               </span>
               <span style={{
-                fontSize: '1.35rem',
-                fontWeight: '800',
-                color: 'var(--primary)',
-                letterSpacing: '-0.02em',
+                fontSize: '1.6rem',
+                fontWeight: '700',
+                color: '#C9A84C',
+                letterSpacing: '-0.01em',
                 display: 'block',
-                borderBottom: '2px solid var(--primary)',
+                borderBottom: '2px solid #C9A84C',
                 paddingBottom: '2px',
                 lineHeight: 1.1,
               }}>
@@ -161,12 +159,12 @@ const Navbar = ({ activeTab, setActiveTab, session }) => {
               </span>
             </div>
             <div style={{
-              fontSize: '0.6rem',
+              fontSize: '0.65rem',
               color: 'var(--text-dim)',
               textTransform: 'uppercase',
               letterSpacing: '0.14em',
-              marginTop: '5px',
-              fontWeight: '600',
+              marginTop: '6px',
+              fontWeight: '500',
             }}>
               Sama-Sama Tayo
             </div>
