@@ -34,14 +34,14 @@ const RestTimer = ({
       <AnimatePresence>
         {!isExpanded && (
           <motion.div
+            className="fixed-above-mobile-nav"
             initial={{ scale: 0, opacity: 0, y: 50 }}
             animate={{ scale: 1, opacity: 1, y: 0 }}
             exit={{ scale: 0, opacity: 0, y: 50 }}
             onClick={() => setIsExpanded(true)}
             style={{
               position: 'fixed',
-              bottom: '90px',
-              right: '24px',
+              right: 'calc(24px + env(safe-area-inset-right, 0px))',
               zIndex: 9000,
               background: 'linear-gradient(135deg, #1C1A17, #12100E)',
               border: '2px solid var(--primary)',

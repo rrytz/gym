@@ -62,15 +62,15 @@ const InstallPrompt = () => {
   return (
     <AnimatePresence>
       <motion.div
+        className="fixed-above-mobile-nav"
         initial={{ y: 120, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         exit={{ y: 120, opacity: 0 }}
         transition={{ type: 'spring', stiffness: 220, damping: 24 }}
         style={{
           position: 'fixed',
-          bottom: '90px',
-          left: '12px',
-          right: '12px',
+          left: 'calc(12px + env(safe-area-inset-left, 0px))',
+          right: 'calc(12px + env(safe-area-inset-right, 0px))',
           zIndex: 8000,
           background: 'linear-gradient(135deg, rgba(20, 18, 16, 0.95), rgba(12, 11, 10, 0.95))',
           border: '1px solid var(--primary)',
